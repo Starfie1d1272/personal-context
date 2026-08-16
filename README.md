@@ -12,11 +12,11 @@ Personal Context 是一个面向长期 AI / Agent 协作的早期研究与系统
 
 ---
 
-## 为什么现有系统还不够？
+## 现有系统解决了什么，还缺什么？
 
 这个项目大量借鉴并计划复用现有 Agent 和 Memory 基础设施，而不是从头重做它们。
 
-其中最重要的三个参考是 **DSH、GenericAgent（GA）和 MemOS**。
+其中最重要的三个参考是 **[DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness)、[GenericAgent（GA）](https://github.com/lsdefine/GenericAgent) 和 [MemOS](https://github.com/MemTensor/MemOS)**。
 
 ### DSH：运行时已经有了，但长期认知仍然需要内容和语义
 
@@ -67,9 +67,9 @@ GA 的两个核心思想对本项目非常重要：
 → 必要时正确修改
 ```
 
-那么系统的可靠性会明显依赖模型本身的能力。
+这使系统可靠性明显依赖模型本身的能力；在较弱或较便宜的模型上，这些风险是否进一步放大，也是 Personal Context 希望验证的问题。
 
-强模型可能完成得很好，但较弱或较便宜的模型更容易：
+这些风险包括：
 
 * 忽略本应读取的信息；
 * 召回错误或不完整的内容；
