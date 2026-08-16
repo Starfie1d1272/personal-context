@@ -1,9 +1,9 @@
-# 2026-08-16 Design Convergence
+# 2026-08-16 设计收敛
 
-> **Type:** Design note / historical record  
-> **Purpose:** 记录今天多轮讨论为什么看起来反复“绕回来”，以及最终如何把 Personal Context、DSH、GA、MemOS、数据库和 Personal DSH Distribution 放到同一套层次里。  
+> **类型：** 设计笔记 / 历史记录  
+> **目的：** 记录今天多轮讨论为什么看起来反复“绕回来”，以及最终如何把 Personal Context、DSH、GA、MemOS、数据库和 Personal DSH Distribution 放到同一套层次里。  
 >
-> 这份文档保存演化过程，不作为 architecture spec。当前状态以 `design-state.md` 为准。
+> 这份文档保存演化过程，不作为架构规范。当前状态以 `design-state.md` 为准。
 
 ---
 
@@ -13,17 +13,17 @@
 
 1. 2026-04-07 的原始 Personal AI OS / 长期个人数据构想；
 2. 对 DSH、GenericAgent、MemOS、OpenViking、Graphiti、TencentDB Agent Memory 等现有系统的生态审计；
-3. State / Claim / Skill、Evidence、Proposal、Governance、Environment Compiler 的架构讨论；
+3. 状态 / 主张 / Skill、证据、修改建议、治理、环境编译器的架构讨论；
 4. 实际使用 GenericAgent 后对 Markdown / 模型自主读取可靠性的反思；
-5. DSH “everything is a plugin” 与 Profile / Bundle 让 Personal AI Distribution 突然变得现实；
+5. DSH “一切皆插件” 与 Profile / Bundle 让 Personal AI Distribution 突然变得现实；
 6. 对 README、创新点和宣传点的多轮重新表述。
 
 表面上看，项目在：
 
 ```text
-Personal Context Layer
+Personal Context 层
 ↔ Personal DSH Distribution
-↔ Memory / Learning system
+↔ 记忆 / 学习系统
 ```
 
 之间反复摆动。
@@ -39,7 +39,7 @@ Personal Context Layer
 此前讨论中出现了一个明显问题：
 
 - 一拿到 DSH + GA 材料，就把项目重定义成 Personal DSH；
-- 一拿到 MemOS / Context 材料，又把项目重定义成 user-owned Context Layer；
+- 一拿到 MemOS / 上下文材料，又把项目重定义成用户自有的上下文层；
 - 新的竞品功能又会让宣传点整体重排。
 
 这种方法不稳定。
@@ -47,10 +47,10 @@ Personal Context Layer
 正确方式应该是先冻结：
 
 ```text
-stable principles
-current baseline
-hypotheses
-open questions
+稳定原则
+当前基线
+假设
+开放问题
 ```
 
 之后新材料只修改对应局部。
@@ -61,23 +61,23 @@ open questions
 
 ## 3. Personal Context 与 Personal DSH 的最终层次
 
-### Core
+### 核心
 
 ```text
 Personal Context
-├── structured data model
-├── provenance / authority
-├── lifecycle
-├── update proposals
-├── governance
-├── context assembly
-├── disclosure
+├── 结构化数据模型
+├── 来源追溯 / 权威性
+├── 生命周期
+├── 更新修改建议
+├── 治理
+├── 上下文组装
+├── 披露
 └── UI
 ```
 
 这是当前核心自研问题。
 
-### First runtime
+### 首个运行时
 
 ```text
 DSH
@@ -85,34 +85,34 @@ DSH
 
 DSH 提供：
 
-- runtime；
-- session；
-- tools；
-- plugins；
-- storage primitives；
-- approval；
-- sandbox；
-- UI extension；
+- 运行时；
+- 会话；
+- 工具；
+- 插件；
+- 存储原语；
+- 审批；
+- 沙箱；
+- UI 扩展；
 - Profile / Bundle / Preset。
 
-### Distribution / delivery
+### 发行 / 交付
 
 未来可以形成：
 
 ```text
 Personal DSH Distribution
 ├── Personal Context
-├── Memory Provider
-├── GA-inspired evolver
+├── 记忆提供方
+├── GA 启发的演化器
 ├── Skills
-├── domain packs
-├── adapters
-└── presets
+├── 领域包
+├── 适配器
+└── 预设
 ```
 
 所以：
 
-> **Personal DSH 是很自然的产品化与 dogfood 形态，但不替代 Personal Context Core 的问题定义。**
+> **Personal DSH 是很自然的产品化与自用验证形态，但不替代 Personal Context 核心的问题定义。**
 
 ---
 
@@ -127,16 +127,16 @@ GenericAgent 的实际体验强化了这一点。
 GA 的设计非常优雅：
 
 ```text
-tiny textual index
-→ LLM realizes something exists
-→ LLM reads deeper Markdown
-→ LLM interprets
-→ LLM uses it
+小型文本索引
+→ LLM 意识到某物存在
+→ LLM 读取更深的 Markdown
+→ LLM 解读
+→ LLM 使用它
 ```
 
 问题不在 Markdown 文件格式本身，而在：
 
-> retrieval policy、schema semantics、authority、ACL、state lifecycle 等关键控制职责如果都隐含在文本里，就过度依赖模型能力。
+> 检索策略、模式语义、权威性、ACL、状态生命周期等关键控制职责如果都隐含在文本里，就过度依赖模型能力。
 
 因此冻结：
 
@@ -146,53 +146,53 @@ tiny textual index
 
 ---
 
-## 5. DSH Session 的正确位置
+## 5. DSH 会话的正确位置
 
-DSH Session Log 不需要被复制成第二套 conversation DB。
+DSH 会话日志不需要被复制成第二套对话数据库。
 
 它最有价值的位置是：
 
-# Evidence Ledger
+# 证据账本
 
 例如：
 
 ```text
-State:
+状态：
 repository.remote = none
 
-Evidence:
-DSH session X / seq Y
-tool: git remote -v
-result: empty
+证据：
+DSH 会话 X / seq Y
+工具：git remote -v
+结果：空
 ```
 
 必须坚持：
 
-> **Evidence ≠ Truth**
+> **证据 ≠ 事实**
 
-Session Log 提供证据，不自动决定权威状态。
+会话日志提供证据，不自动决定权威状态。
 
 ---
 
 ## 6. GA 的正确位置
 
-今天一度把项目向“GA-inspired Personal Evolution Bundle”拉得过远。
+今天一度把项目向“GA 启发的个人演化 Bundle”拉得过远。
 
 最后收敛为：
 
 ### 保留
 
-- Contextual Information Density；
-- Experience → Pattern；
-- Pattern → SOP / Skill；
-- 长期 Learning Loop。
+- 上下文信息密度；
+- 经验 → 模式；
+- 模式 → SOP / Skill；
+- 长期学习闭环。
 
 ### 不直接继承
 
-- Markdown 事实库作为 Canonical State；
+- Markdown 事实库作为当前权威状态；
 - LLM 自己决定什么时候读取关键个人事实；
 - 模型自己维护长期权威状态；
-- Experience 自动变成 Truth。
+- 经验自动变成事实。
 
 因此可以设计：
 
@@ -209,9 +209,9 @@ skill-evolver
 
 一度把以下能力当成 Personal Context 的宣传差异：
 
-- context belongs to user；
-- cross-agent memory；
-- Memory Viewer。
+- 上下文属于用户；
+- 跨 Agent 记忆；
+- 记忆查看器。
 
 重新对照 MemOS 后确认：
 
@@ -220,27 +220,27 @@ skill-evolver
 MemOS 当前定位：
 
 ```text
-important reference
-+ reusable Memory / Learning Provider
-+ baseline
+重要参考
++ 可复用的记忆 / 学习提供方
++ 基线
 ```
 
-Personal Context 不需要重写其擅长的长期 Memory / Skill 学习。
+Personal Context 不需要重写其擅长的长期记忆 / Skill 学习。
 
 真正的上层边界是：
 
 ```text
-MemOS-derived understanding
-→ Evidence / candidate / proposal
-→ Personal Context governance
-→ authoritative long-term assets
+MemOS 派生的理解
+→ 证据 / 候选 / 修改建议
+→ Personal Context 治理
+→ 权威长期资产
 ```
 
 ---
 
 ## 8. 重新确认的核心架构
 
-### Long-term assets
+### 长期资产
 
 ```text
 State
@@ -248,47 +248,47 @@ Claim
 Skill
 ```
 
-### Shared evidence layer
+### 共享证据层
 
 ```text
-Evidence
+证据
 ```
 
-### Write
+### 写入
 
 ```text
-Evidence
-→ Proposal
-→ Governance
-→ Commit
+证据
+→ 修改建议
+→ 治理
+→ 写入
 ```
 
-### Read
+### 读取
 
 ```text
-Activity
-→ candidate retrieval
-→ type-aware assembly
-→ budget
-→ deterministic disclosure
+活动
+→ 候选检索
+→ 类型感知组装
+→ 预算
+→ 确定性披露
 → Agent
 ```
 
-### Human
+### 用户
 
 ```text
-browse
-edit
-review
-trace
-audit
-export
-delete
+浏览
+编辑
+审查
+追踪
+审计
+导出
+删除
 ```
 
 ---
 
-## 9. Runtime Compiler 是新增 Hypothesis，不是新核心定义
+## 9. 运行时编译器是新增假设，不是新核心定义
 
 GA 的真实问题提示：
 
@@ -297,62 +297,62 @@ GA 的真实问题提示：
 于是出现：
 
 ```text
-Context Compiler
-→ what the model sees
+上下文编译器
+→ 模型看到什么
 
-Runtime Compiler
-→ what the agent can use
+运行时编译器
+→ Agent 可以使用什么
 ```
 
 例如根据环境自动：
 
 - 暴露对应 Skill；
 - 隐藏不兼容 Skill；
-- 配置 Tool defaults；
+- 配置工具默认值；
 - 修改 Preset。
 
 这个方向很有潜力，但当前不能因为它很漂亮就重写整个项目。
 
 它必须通过：
 
-- weaker model；
-- fewer token；
-- fewer tool calls；
-- stable success；
+- 更弱的模型；
+- 更少的 token；
+- 更少的工具调用；
+- 稳定的成功；
 
 来证明。
 
 ---
 
-## 10. 外部 App 联邦的叙事被收缩
+## 10. 外部应用联邦的叙事被收缩
 
 此前曾经把：
 
-> “原始数据继续留在 Source of Truth，Personal Context 只做引用和连接”
+> “原始数据继续留在权威数据源，Personal Context 只做引用和连接”
 
 讲得过于理想化。
 
-现实是大量闭源 App：
+现实是大量闭源应用：
 
 - 无 API；
 - 跨设备；
 - 数据结构不透明；
 - 自动化困难；
-- 无稳定 export。
+- 无稳定导出。
 
 因此新的边界：
 
-> **External adapters 是增量能力，不是 Personal Context 成立的前提。**
+> **外部适配器是增量能力，不是 Personal Context 成立的前提。**
 
 第一阶段先理解 Agent 自己可靠可观察的世界：
 
-- DSH Session；
-- Tool results；
+- DSH 会话；
+- 工具结果；
 - Git；
-- Files；
-- workspace；
-- system probes；
-- explicit user input。
+- 文件；
+- 工作区；
+- 系统探针；
+- 显式用户输入。
 
 ---
 
@@ -360,41 +360,41 @@ Runtime Compiler
 
 ### 不再把这些当主要创新
 
-- user-owned context；
-- cross-AI sharing；
-- Memory Viewer；
-- hierarchical context；
-- hybrid retrieval；
-- temporal facts；
+- 用户自有上下文；
+- 跨 AI 共享；
+- 记忆查看器；
+- 分层上下文；
+- 混合检索；
+- 时间事实；
 - ACL；
-- Skill evolution。
+- Skill 演化。
 
 它们仍然可以是产品能力，但不是独有创新。
 
-### 不再把 Personal DSH Distribution 当成 Core 的替代定义
+### 不再把 Personal DSH Distribution 当成核心的替代定义
 
-Distribution 是组合和交付层。
+发行（Distribution）是组合和交付层。
 
-### 不再假设“所有现有 App 都容易连接”
+### 不再假设“所有现有应用都容易连接”
 
-Adapter 必须面对现实可用性。
+适配器必须面对现实可用性。
 
-### 不再接受纯 Markdown 作为 authoritative control plane
+### 不再接受纯 Markdown 作为权威控制面
 
-Markdown 继续是优秀内容格式，不是数据库 / ACL / state machine。
+Markdown 继续是优秀内容格式，不是数据库 / ACL / 状态机。
 
 ### 不再允许主 LLM 直接写长期权威状态
 
-默认必须走 Proposal / Governance。
+默认必须走修改建议 / 治理。
 
-### 不再把确定性理解成 if/else relevance routing
+### 不再把确定性理解成 if/else 相关性路由
 
 确定的是：
 
-- policy；
-- scope；
-- disclosure；
-- lifecycle constraints。
+- 策略；
+- 范围；
+- 披露；
+- 生命周期约束。
 
 相关性可以模型化。
 
@@ -405,56 +405,56 @@ Markdown 继续是优秀内容格式，不是数据库 / ACL / state machine。
 不是单个算法，而是组合：
 
 ```text
-structured DB control plane
+结构化数据库控制面
 +
-State / Claim / Skill decision semantics
+状态 / 主张 / Skill 决策语义
 +
-Evidence-backed write governance
+证据支撑的写入治理
 +
-lifecycle / stale / revalidation
+生命周期 / 过时 / 重新验证
 +
-type-aware Context Assembly
+类型感知的上下文组装
 +
-deterministic disclosure
+确定性披露
 +
-single final assembly owner
+唯一最终组装负责人
 +
-provider federation
+多提供方接入
 +
-human-visible governance
+用户可见的治理
 ```
 
-是否真的值得存在，要用 baseline 证明。
+是否真的值得存在，要用基线证明。
 
 ---
 
 ## 13. 第一阶段应该做什么
 
-先做一个窄 vertical slice：
+先做一个窄垂直切片：
 
-# Device & Project Environment
+# 设备与项目运行环境
 
 验证：
 
 ```text
-State
-→ Context
-→ Agent action
-→ Tool Evidence
-→ Proposal
-→ Governance
-→ updated State
+状态
+→ 上下文
+→ Agent 行动
+→ 工具证据
+→ 修改建议
+→ 治理
+→ 更新后的状态
 ```
 
-并做 UI：
+并做界面：
 
-- State；
-- Evidence；
-- stale；
-- Proposal；
-- Context Run。
+- 状态；
+- 证据；
+- 过时；
+- 修改建议；
+- 上下文编译记录。
 
-Memory / Skill Evolution 可以作为第二阶段接入。
+记忆 / Skill 演化可以作为第二阶段接入。
 
 ---
 
@@ -465,8 +465,8 @@ Memory / Skill Evolution 可以作为第二阶段接入。
 - `origin.md`：只记录为什么开始；
 - `vision.md`：只记录最终想达到什么；
 - `principles.md`：只记录稳定原则；
-- `design-state.md`：成为当前 canonical state；
-- `architecture.md`：当前 baseline；
+- `design-state.md`：成为当前权威状态；
+- `architecture.md`：当前基线；
 - `open-questions.md`：尚未决定；
 - `related-work.md`：已有系统解决了什么；
 - `design-notes/`：保留历史演化。
@@ -475,9 +475,9 @@ Memory / Skill Evolution 可以作为第二阶段接入。
 
 如果某个新想法与当前设计冲突，先问：
 
-1. 它推翻了 Stable Principle 吗？
-2. 它只是替换 Baseline 吗？
-3. 它只是一个新 Hypothesis 吗？
-4. 还是应当进入 Open Questions？
+1. 它推翻了已确定原则吗？
+2. 它只是替换当前方案吗？
+3. 它只是一个新待验证假设吗？
+4. 还是应当进入开放问题？
 
 只有第 1 种情况才需要重新审视整个项目。

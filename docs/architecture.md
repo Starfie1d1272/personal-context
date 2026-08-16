@@ -1,120 +1,120 @@
-# Architecture
+# 架构
 
-> **As of:** 2026-08-16  
-> **Status:** Current baseline, not final specification  
+> **截至：** 2026-08-16  
+> **状态：** 当前基线，不是最终规范  
 >
-> Stable principles are in [`principles.md`](./principles.md).  
-> Unresolved choices are in [`open-questions.md`](./open-questions.md).
+> 稳定原则见 [`principles.md`](./principles.md)。  
+> 未解决的问题见 [`open-questions.md`](./open-questions.md)。
 
 ---
 
-## 1. System boundary
+## 1. 系统边界
 
 Personal Context 不重新实现：
 
-- Agent Runtime；
-- LLM provider system；
-- full Memory OS；
-- full RAG stack；
-- Skills Runtime；
+- Agent 运行时；
+- LLM 提供方系统；
+- 完整记忆操作系统；
+- 完整 RAG 技术栈；
+- Skills 运行时；
 - Git；
 - Zotero；
 - 财务软件；
 - 家庭资产软件；
-- universal ontology。
+- 通用本体。
 
 核心负责的是：
 
 ```text
-Personal Data Model
-+ Provenance & Authority
-+ Lifecycle
-+ Update Proposals
-+ Context Assembly
-+ Disclosure Policy
-+ Human Governance UI
+个人数据模型
++ 来源追溯与权威性
++ 生命周期
++ 更新修改建议
++ 上下文组装
++ 披露策略
++ 用户治理界面
 ```
 
 ---
 
-## 2. Top-level architecture
+## 2. 顶层架构
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│                     Evidence Sources                     │
+│                       证据来源                            │
 │                                                          │
-│ User / DSH Session / Tool results / Git / Files / Probe │
-│ Papers / APIs / Memory providers / External adapters    │
+│ 用户 / DSH 会话 / 工具结果 / Git / 文件 / 探针            │
+│ 论文 / API / 记忆提供方 / 外部适配器                     │
 └───────────────────────────┬──────────────────────────────┘
                             │
                             ▼
-                       Evidence Layer
+                          证据层
                             │
                             ▼
-              Candidate interpretation / Proposal
+                 候选解释 / 修改建议
                             │
-                  authority / conflict / risk
+                   权威性 / 冲突 / 风险
                             │
                             ▼
-                       Governance
+                          治理
                             │
                             ▼
 ┌──────────────────────────────────────────────────────────┐
-│                Personal Context Control Plane            │
+│                 Personal Context 控制面                   │
 │                                                          │
-│ Entity / State / Claim / Skill metadata / EvidenceRef   │
-│ Proposal / Relation / Policy / Scope / Revision         │
-│ Lifecycle / Disclosure / Context Run                    │
+│ 实体 / 状态 / 主张 / Skill 元数据 / 证据引用             │
+│ 修改建议 / 关系 / 策略 / 范围 / 修订                     │
+│ 生命周期 / 披露 / 上下文编译记录                         │
 └───────────────────────┬──────────────────────────────────┘
                         │
                         ▼
-                 Context Assembly
-           scope / retrieval / rerank / types
-             budget / disclosure / serialize
+                    上下文组装
+              范围 / 检索 / 重排序 / 类型
+                预算 / 披露 / 序列化
                         │
           ┌─────────────┴──────────────┐
           ▼                            ▼
-   Context Compiler              Runtime Compiler?
-  what model sees            tools / skills / defaults
+       上下文编译器              运行时编译器？
+       模型看到什么              工具 / Skills / 默认配置
           │                            │
           └─────────────┬──────────────┘
                         ▼
                        DSH
-                 reasoning / action
+                  推理 / 行动
                         │
                         ▼
-                    new Evidence
+                      新证据
 ```
 
-`Runtime Compiler` 目前仍是 Hypothesis；`Context Compiler` 是 Baseline。
+运行时编译器（Runtime Compiler）目前仍是假设；上下文编译器（Context Compiler）是当前方案。
 
 ---
 
-## 3. Structured control plane
+## 3. 结构化控制面
 
-### 3.1 Logical entities
+### 3.1 逻辑实体
 
 当前建议的最小逻辑对象：
 
 ```text
-Entity
-State
-Claim
+实体
+状态
+主张
 Skill
-EvidenceRef
-Proposal
-Relation
-Policy
-Scope
-Revision
-ContextRun
+证据引用
+修改建议
+关系
+策略
+范围
+修订
+上下文编译记录
 ```
 
-这不是最终数据库 schema。
+这不是最终数据库 Schema。
 
-### 3.2 State
+### 3.2 状态
 
-State 表达：
+状态表达：
 
 > **当前认为“现在是什么”。**
 
@@ -128,96 +128,96 @@ valid_from
 valid_until
 observed_at
 verified_at
-source / evidence refs
-authority
+来源 / 证据引用
+权威性
 confidence
-freshness
+时效性
 sensitivity
 status
 supersedes / superseded_by
 ```
 
-State 重点是 currentness 与 authority。
+状态重点是当前性与权威性。
 
-### 3.3 Claim
+### 3.3 主张
 
-Claim 表达：
+主张表达：
 
 > **某个主体提出或支持的可论证判断。**
 
 需要允许：
 
 ```text
-support
-contradict
-qualify
-scope
-confidence
-source attribution
+支持
+反对
+限定
+范围
+置信度
+来源归属
 ```
 
-Claim 不采用 State 的“新值覆盖旧值”语义。
+主张不采用状态的“新值覆盖旧值”语义。
 
 ### 3.4 Skill
 
 Skill 可以拆成：
 
 ```text
-structured metadata
-├── preconditions
-├── applicability
-├── reliability
-├── verification criteria
-├── history
-└── lifecycle
+结构化元数据
+├── 前置条件
+├── 适用性
+├── 可靠性
+├── 验证标准
+├── 历史
+└── 生命周期
 
-content / executable
-├── Markdown instructions
-└── code / tool / workflow
+内容 / 可执行部分
+├── Markdown 指令
+└── 代码 / 工具 / 工作流
 ```
 
-### 3.5 EvidenceRef
+### 3.5 证据引用
 
 Personal Context 不必复制所有原始数据。
 
-EvidenceRef 应能够指向：
+证据引用应能够指向：
 
-- DSH session + seq；
-- tool call/result；
-- Git commit；
-- file + range；
+- DSH 会话 + seq；
+- 工具调用/结果；
+- Git 提交；
+- 文件 + 范围；
 - URL；
-- paper / page / figure；
-- API record；
-- external provider object。
+- 论文 / 页码 / 图表；
+- API 记录；
+- 外部提供方对象。
 
 ---
 
-## 4. Write path: assimilation
+## 4. 写入路径：信息沉淀
 
-### 4.1 Default pipeline
+### 4.1 默认流水线
 
 ```text
-new event
+新事件
   ↓
-Evidence capture
+证据捕获
   ↓
-candidate extraction
+候选提取
   ↓
-asset classification
+资产分类
   ↓
-authority evaluation
+权威性评估
   ↓
-conflict detection
+冲突检测
   ↓
-Proposal
+修改建议
   ↓
-governance
+治理
   ↓
-commit / reject / revise
+写入 / 拒绝 / 修订
 ```
 
-### 4.2 Why not direct model writes
+### 4.2 为什么不允许模型直接写入
 
 例如：
 
@@ -228,29 +228,29 @@ commit / reject / revise
 首先应该得到：
 
 ```text
-Evidence:
-user reported repeated disconnects
+证据：
+用户报告反复断连
 ```
 
 而不是直接得到：
 
 ```text
-State:
-Codex connectivity = broken
+状态：
+Codex 连接 = 中断
 ```
 
 更不能直接得到：
 
 ```text
-Claim:
-Japanese nodes are unreliable
+主张：
+日本节点不可靠
 ```
 
 这三者需要不同的证据门槛。
 
-### 4.3 Authority
+### 4.3 权威性
 
-不同 source 应有不同 authority。
+不同来源应有不同权威性。
 
 例如：
 
@@ -258,243 +258,243 @@ Japanese nodes are unreliable
 git remote -v
 ```
 
-对于 repository.remote 的 authority 通常高于一次模型总结。
+对于 repository.remote 的权威性通常高于一次模型总结。
 
-具体 authority model 仍未冻结。
+具体权威性模型仍未冻结。
 
-### 4.4 Governance levels
+### 4.4 治理分级
 
 候选模型：
 
 ```text
-auto-commit
-silent proposal
-batch review
-immediate approval
-never infer
+自动写入
+静默修改建议
+批量审查
+即时审批
+绝不推断
 ```
 
 当前只确认“必须分级”，不确认最终五级设计。
 
 ---
 
-## 5. Read path: Context Assembly
+## 5. 读取路径：上下文组装
 
-### 5.1 Activity
+### 5.1 活动
 
-顶层触发不是只有 Task。
+顶层触发不是只有任务。
 
 可能包括：
 
-- task；
-- query；
-- record；
-- conversation；
-- event；
-- schedule；
-- system probe。
+- 任务；
+- 查询；
+- 记录；
+- 对话；
+- 事件；
+- 计划；
+- 系统探针。
 
-Activity 决定是否：
+活动决定是否：
 
-- 只记录 Evidence；
-- 查询 State；
-- 召回 Memory；
+- 只记录证据；
+- 查询状态；
+- 召回记忆；
 - 加载 Skill；
 - 运行 Agent；
-- 生成 Proposal。
+- 生成修改建议。
 
-### 5.2 Hard scope
+### 5.2 硬性范围
 
 优先使用确定信息缩小范围：
 
 ```text
-current user
-workspace
-project
-session
-agent
-preset
-model
-tool
-explicit entity
-domain
-privacy scope
+当前用户
+工作区
+项目
+会话
+Agent
+预设
+模型
+工具
+显式实体
+领域
+隐私范围
 ```
 
-### 5.3 Candidate retrieval
+### 5.3 候选检索
 
 可以并行使用成熟组件：
 
 ```text
-exact structured query
+精确结构化查询
 FTS / BM25
-vector retrieval
-graph query
-temporal query
-memory provider
-document provider
-skill provider
+向量检索
+图查询
+时间查询
+记忆提供方
+文档提供方
+Skill 提供方
 ```
 
-Personal Context 不应发明自己的全套 retrieval stack。
+Personal Context 不应发明自己的全套检索技术栈。
 
-### 5.4 Fusion / rerank
+### 5.4 融合 / 重排序
 
 候选可以使用：
 
 - RRF；
-- weighted fusion；
-- dedicated reranker；
-- small classifier。
+- 加权融合；
+- 专用重排序模型；
+- 小型分类器。
 
 这些是基础设施，不是项目创新重点。
 
-### 5.5 Type-aware handling
+### 5.5 类型感知处理
 
-不同资产进入最终 Context 前使用不同规则。
+不同资产进入最终上下文前使用不同规则。
 
-#### State
-
-考虑：
-
-- current；
-- authority；
-- validity；
-- freshness。
-
-某些当前 State 可能是强制 Context，而不是普通 similarity candidate。
-
-#### Claim
+#### 状态
 
 考虑：
 
-- scope；
-- confidence；
-- supporting evidence；
-- contradiction。
+- 当前；
+- 权威性；
+- 有效性；
+- 时效性。
 
-如果存在关键冲突 Claim，不能只选择最高分一条造成选择性证据。
+某些当前状态可能是强制上下文，而不是普通相似性候选。
+
+#### 主张
+
+考虑：
+
+- 范围；
+- 置信度；
+- 支持性证据；
+- 矛盾。
+
+如果存在关键冲突主张，不能只选择最高分一条造成选择性证据。
 
 #### Skill
 
 考虑：
 
-- precondition match；
-- environment compatibility；
-- reliability；
-- historical success / failure。
+- 前置条件匹配；
+- 环境兼容性；
+- 可靠性；
+- 历史成功 / 失败。
 
-### 5.6 Context budget
+### 5.6 上下文预算
 
-Context 必须有显式预算。
+上下文必须有显式预算。
 
 可以分层：
 
 ```text
-L0 pointer
-L1 summary
-L2 full content
+L0 指针
+L1 摘要
+L2 完整内容
 ```
 
 需要时再展开。
 
-### 5.7 Disclosure
+### 5.7 披露
 
-最终 Disclosure 必须晚于相关性判断，并使用确定性规则：
+最终披露必须晚于相关性判断，并使用确定性规则：
 
 ```text
-candidate
+候选
   ↓
-identity / scope
+身份 / 范围
   ↓
-sensitivity
+敏感度
   ↓
-target model / provider
+目标模型 / 提供方
   ↓
-policy
+策略
   ↓
-redaction / deny / allow
+脱敏 / 拒绝 / 允许
   ↓
-serialization
+序列化
 ```
 
-Sensitive data leakage 不能依赖 reranker “大概率不选中”。
+敏感数据泄露不能依赖重排序模型“大概率不选中”。
 
 ---
 
-## 6. ContextRun audit
+## 6. 上下文编译记录审计
 
-每次 Context Assembly 应产生可审计记录，例如：
+每次上下文组装应产生可审计记录，例如：
 
 ```text
-Agent Context Run
+Agent 上下文编译记录
 
-Activity:
-  install project dependencies
+活动：
+  安装项目依赖
 
-Agent:
-  DSH / code preset
+Agent：
+  DSH / 代码预设
 
-Included:
-  current project
-  current OS
+已包含：
+  当前项目
+  当前操作系统
   package_manager = pnpm
   dependency-install Skill
 
-Excluded:
+已排除：
   health/*
-    reason: disclosure policy
+    原因：披露策略
 
   unrelated-project/*
-    reason: irrelevant
+    原因：不相关
 
-Sources:
-  Personal Context State
-  DSH Session
-  Skill Provider
+来源：
+  Personal Context 状态
+  DSH 会话
+  Skill 提供方
 
-Tokens:
+token：
   ...
 ```
 
-这是 Human UI 和 debugging 的重要基础。
+这是用户界面和调试的重要基础。
 
 ---
 
-## 7. DSH integration
+## 7. DSH 集成
 
 第一实现预计利用：
 
-### Session Log / Session Query
+### 会话日志 / 会话查询
 
-作为主要 Evidence 来源之一。
+作为主要证据来源之一。
 
 Personal Context 保存：
 
 ```text
-EvidenceRef:
+证据引用:
   session_id
   seq
 ```
 
 不复制一套聊天历史数据库。
 
-### Storage / Storage Domain
+### 存储 / 存储域
 
-可以作为第一实现的 structured persistence substrate。
+可以作为第一实现的结构化持久化底层。
 
-但核心 domain semantics 不能和 DSH implementation 强绑定。
+但核心领域语义不能和 DSH 实现强绑定。
 
 ### `agent/pre-step`
 
-适合作为 Context Assembly 的重要 integration point：
+适合作为上下文组装的重要集成点：
 
 ```text
-Activity
+活动
 → Personal Context
-→ compile
-→ final context
-→ model
+→ 编译
+→ 最终上下文
+→ 模型
 ```
 
 ### Profile / Bundle / Preset
@@ -502,45 +502,45 @@ Activity
 可以组合：
 
 - Personal Context；
-- Memory Provider；
+- 记忆提供方；
 - Skills；
-- GA-inspired evolution；
-- domain packs；
+- GA 启发的演化；
+- 领域包；
 - UI。
 
-这是一种 delivery/composition 方式，不是核心创新。
+这是一种交付/组合方式，不是核心创新。
 
 ---
 
-## 8. Memory and learning providers
+## 8. 记忆与学习提供方
 
 当前原则：
 
 ```text
-Memory Provider
-→ candidate memory / experience / learned policy
+记忆提供方
+→ 候选记忆 / 经验 / 已学习策略
 
 Personal Context
-→ canonical semantics / governance / assembly
+→ 当前权威语义 / 治理 / 组装
 ```
 
-MemOS、OpenViking、Graphiti 等都可以成为 Provider 或 baseline。
+MemOS、OpenViking、Graphiti 等都可以成为提供方或基线。
 
-Provider 的派生输出不能默认覆盖 canonical State。
+提供方的派生输出不能默认覆盖当前权威状态。
 
 ---
 
-## 9. GA-inspired Learning Loop
+## 9. GA 启发的学习闭环
 
 保留 GA 的两个重要思想：
 
-- Context information density；
-- Experience → reusable SOP / Skill。
+- 上下文信息密度；
+- 经验 → 可复用 SOP / Skill。
 
 但降低以下设计的权力：
 
 - LLM 自己维护文本事实库；
-- tiny Markdown index 作为 authoritative state discovery；
+- 小型 Markdown 索引作为权威状态发现；
 - 模型自己决定所有事实何时应该读取；
 - 经验自动变成世界事实。
 
@@ -553,53 +553,53 @@ skill-evolver
 
 ---
 
-## 10. Runtime Compiler hypothesis
+## 10. 运行时编译器假设
 
-Context Compiler 解决：
+上下文编译器解决：
 
 > 模型应该看到什么？
 
-Runtime Compiler 可能解决：
+运行时编译器可能解决：
 
 > Agent 应该拥有什么？
 
 例如：
 
 ```text
-current environment
-→ choose tools
-→ choose skills
-→ preset modifications
-→ runtime defaults
+当前环境
+→ 选择工具
+→ 选择 Skills
+→ 预设修改
+→ 运行时默认配置
 ```
 
-它的目标是让 Harness 承担部分原本依赖模型能力的工作。
+它的目标是让执行框架（Harness）承担部分原本依赖模型能力的工作。
 
-需要用 benchmark 证明独立价值。
+需要用基准测试证明独立价值。
 
 ---
 
-## 11. Human UI
+## 11. 用户界面
 
 当前候选信息架构：
 
 ```text
-Overview
-Entities
-Knowledge
+概览
+实体
+知识
 Skills
-Activity
-Sources
+活动
+来源
 ```
 
-### Overview
+### 概览
 
-- 当前关键 State；
-- stale / needs-review；
-- pending Proposal；
-- recent changes。
+- 当前关键状态；
+- 过时 / 需要复查；
+- 待处理修改建议；
+- 最近变更。
 
-### Entities
+### 实体
 
 - 人；
 - 项目；
@@ -607,129 +607,129 @@ Sources
 - 资产；
 - 应用；
 - 研究主题；
-- 其它 domain entity。
+- 其它领域实体。
 
-### Knowledge
+### 知识
 
-- Claims；
-- support / contradiction；
-- scope；
-- uncertainty。
+- 主张；
+- 支持 / 矛盾；
+- 范围；
+- 不确定性。
 
 ### Skills
 
-- preconditions；
-- reliability；
-- usage history；
-- failure history；
-- revisions。
+- 前置条件；
+- 可靠性；
+- 使用历史；
+- 失败历史；
+- 修订。
 
-### Activity
+### 活动
 
-- input；
-- Tool result；
-- Evidence；
-- Proposal；
-- commits；
-- Context Runs。
+- 输入；
+- 工具结果；
+- 证据；
+- 修改建议；
+- 写入；
+- 上下文编译记录。
 
-### Sources
+### 来源
 
 - DSH；
 - Git；
-- Files；
+- 文件；
 - Zotero；
-- Memory Providers；
+- 记忆提供方；
 - APIs；
-- system probes。
+- 系统探针。
 
 ---
 
-## 12. External sources
+## 12. 外部来源
 
-不要假设所有 Source of Truth 都能直接连接。
+不要假设所有权威数据源都能直接连接。
 
 第一阶段优先：
 
 ```text
-DSH Session
-Tools
-Workspace
-Files
+DSH 会话
+工具
+工作区
+文件
 Git
-System probes
-Explicit user input
+系统探针
+显式用户输入
 ```
 
-开放 API / MCP / local-first applications 是后续高价值 Adapter。
+开放 API / MCP / 本地优先应用是后续高价值适配器。
 
-闭源、跨设备、无 API 应用的接入策略仍是 Open Question。
+闭源、跨设备、无 API 应用的接入策略仍是待解决问题。
 
 ---
 
-## 13. First vertical slice
+## 13. 第一个垂直切片
 
-# Device & Project Environment
+# 设备与项目运行环境
 
 需要支持：
 
 ```text
-device
-os
-arch
-shell
-project
-package manager
-runtime / dependency environment
+设备
+操作系统
+架构
+Shell
+项目
+包管理器
+运行时 / 依赖环境
 ```
 
 验证：
 
 ```text
-State
-→ Context Assembly
-→ Agent action
-→ Tool Evidence
-→ Proposal
-→ Governance
-→ State update
+状态
+→ 上下文组装
+→ Agent 行动
+→ 工具证据
+→ 修改建议
+→ 治理
+→ 状态更新
 ```
 
-第一版不要求同时接完整 Memory OS。
+第一版不要求同时接完整记忆操作系统。
 
 ---
 
-## 14. Non-goals
+## 14. 非目标
 
 当前第一阶段明确不做：
 
-- 新 Agent Runtime；
-- 新 vector DB；
+- 新 Agent 运行时；
+- 新向量数据库；
 - 完整 RAG；
 - 通用时间知识图数据库；
 - 新 Skills Runtime；
 - 完整财务软件；
 - 完整家庭资产软件；
-- universal ontology；
+- 通用本体；
 - 全自动 Personal AI 管家；
-- “把所有个人 App 都同步进来”。
+- “把所有个人应用都同步进来”。
 
 ---
 
-## 15. Implementation questions
+## 15. 实现问题
 
 以下内容不在本文锁定，见 [`open-questions.md`](./open-questions.md)：
 
-- DB technology；
-- exact schema；
-- migrations；
-- graph vs relational；
-- authority scoring；
-- revalidation；
-- provider API；
-- Runtime Compiler；
-- governance UX；
-- cross-device；
-- external app ingestion；
-- privacy rule language；
-- Context benchmark。
+- 数据库技术；
+- 具体 Schema；
+- 迁移；
+- 图 vs 关系型；
+- 权威性评分；
+- 重新验证；
+- 提供方 API；
+- 运行时编译器；
+- 治理 UX；
+- 跨设备；
+- 外部应用接入；
+- 隐私规则语言；
+- 上下文基准测试。
