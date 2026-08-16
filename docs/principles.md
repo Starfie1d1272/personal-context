@@ -1,17 +1,17 @@
-# Design Principles
+# 设计原则
 
-> **As of:** 2026-08-16  
-> **Status:** Stable unless explicitly revised  
+> **截至：** 2026-08-16  
+> **状态：** 已确定（除非明确修订）  
 >
-> 本文件只保存当前认为应当长期稳定的设计原则。实现细节、Provider 选择和具体 schema 不写在这里。
+> 本文件只保存当前认为应当长期稳定的设计原则。实现细节、提供方选择和具体模式不写在这里。
 
 ---
 
-## P1. 用户拥有的是长期 Context，不是某个模型的附属 Memory
+## P1. 用户拥有的是长期上下文，不是某个模型的附属记忆
 
 关于用户、项目及其现实环境的长期认识，其生命周期天然长于一次会话、一个模型或一个 Agent。
 
-模型、Agent 和 Memory Provider 都应被视为消费者或维护者，而不是天然的数据所有者。
+模型、Agent 和记忆提供方都应被视为消费者或维护者，而不是天然的数据所有者。
 
 这是一条愿景原则，不应被宣传成“单点技术首创”。
 
@@ -25,55 +25,55 @@
 Markdown + LLM 自己阅读 + LLM 自己理解 + LLM 自己改写
 ```
 
-核心 control plane 必须：
+核心控制面必须：
 
-- schema-backed；
-- queryable；
-- tool-mediated；
-- versionable；
-- traceable；
-- policy-enforceable。
+- 模式支撑；
+- 可查询；
+- 工具中介；
+- 可版本化；
+- 可追溯；
+- 可执行策略约束。
 
-但长文本、SOP、Episode、Skill docs 和原始资料可以继续使用 Markdown / files / blobs。
+但长文本、SOP、经验片段、Skill 文档和原始资料可以继续使用 Markdown / 文件 / 二进制大对象。
 
 > **控制面结构化，内容面自由。**
 
 ---
 
-## P3. Memory 是机制，不是统一语义
+## P3. 记忆是机制，不是统一语义
 
-Memory 可以保存和召回 State、Claim、Experience、Skill。
+记忆可以保存和召回状态、主张、经验、Skill。
 
-但长期信息不能因为进入 Memory 系统就失去其原本的决策语义。
+但长期信息不能因为进入记忆系统就失去其原本的决策语义。
 
 ---
 
-## P4. State / Claim / Skill 的治理语义不同
+## P4. 状态 / 主张 / Skill 的治理语义不同
 
 ```text
-State
+状态
 → 现在是什么？
 
-Claim
+主张
 → 我们有什么理由相信什么？
 
 Skill
 → 在什么条件下应该怎么做？
 ```
 
-它们的冲突、更新、失效和验证方式不同，因此不能默认使用同一个“memory overwrite”逻辑。
+它们的冲突、更新、失效和验证方式不同，因此不能默认使用同一个“记忆覆盖”逻辑。
 
 ---
 
-## P5. Evidence 不等于 Truth
+## P5. 证据不等于事实
 
 任何长期资产都应能回答：
 
 > **“凭什么？”**
 
-用户一句话、Agent 总结、Tool result、文件、论文、系统探针都只是不同 authority 的 Evidence。
+用户一句话、Agent 总结、工具结果、文件、论文、系统探针都只是不同权威性的证据。
 
-Evidence 进入长期认知前需要解释和治理。
+证据进入长期认知前需要解释和治理。
 
 ---
 
@@ -82,11 +82,11 @@ Evidence 进入长期认知前需要解释和治理。
 默认写入协议：
 
 ```text
-Evidence
-→ Proposal
-→ authority / conflict / risk / policy
-→ Governance
-→ Commit
+证据
+→ 修改建议
+→ 权威性 / 冲突 / 风险 / 策略
+→ 治理
+→ 写入
 ```
 
 低风险、高权威来源未来可以自动提交；高风险或高敏感信息可能永远不允许自动推断。
@@ -118,18 +118,18 @@ retire()
 
 ---
 
-## P8. Context 的目标不是更多，而是正确、相关和最小必要
+## P8. 上下文的目标不是更多，而是正确、相关和最小必要
 
-长期信息不能全量进入每一轮 Prompt。
+长期信息不能全量进入每一轮提示词。
 
-Context selection 的目标包括：
+上下文选择的目标包括：
 
-- current；
-- relevant；
-- authoritative；
-- minimal；
-- within budget；
-- allowed to disclose。
+- 当前；
+- 相关；
+- 权威；
+- 最小必要；
+- 预算内；
+- 允许披露。
 
 ---
 
@@ -138,43 +138,43 @@ Context selection 的目标包括：
 可以使用：
 
 - BM25；
-- embedding；
-- reranker；
-- graph retrieval；
-- temporal retrieval；
-- classifier；
+- 嵌入；
+- 重排序模型；
+- 图检索；
+- 时态检索；
+- 分类器；
 - 小 LLM。
 
 来判断相关性。
 
 但以下边界不能交给主模型临场“凭感觉”：
 
-- identity / scope；
-- current authoritative state；
-- revoked / expired；
-- privacy；
-- disclosure；
-- allowed provider / model；
-- token hard limits；
-- serialization constraints。
+- 身份 / 范围；
+- 当前权威状态；
+- 已撤销 / 已过期；
+- 隐私；
+- 披露；
+- 允许的提供方 / 模型；
+- Token 硬限制；
+- 序列化约束。
 
 ---
 
-## P10. Provider 可以很多，最终 Assembly / Disclosure Owner 必须唯一
+## P10. 提供方可以很多，最终组装 / 披露责任方必须唯一
 
-不同 Provider 可以返回候选。
+不同提供方可以返回候选。
 
-但一次 Agent request 必须有一个最终责任方决定：
+但一次 Agent 请求必须有一个最终责任方决定：
 
 > **模型最后真正看到了什么？**
 
-否则无法审计 Context 的来源、重复、冲突和泄露。
+否则无法审计上下文的来源、重复、冲突和泄露。
 
 ---
 
 ## P11. 所有进入长期认知范围的内容都必须可见
 
-Personal Context 不能成为新的黑箱 Memory。
+Personal Context 不能成为新的黑箱记忆。
 
 至少要能够：
 
@@ -186,9 +186,9 @@ Personal Context 不能成为新的黑箱 Memory。
 - 追溯来源；
 - 查看历史；
 - 查看冲突；
-- 审核 Proposal；
+- 审核修改建议；
 - 查看披露规则；
-- 查看每次 Context Run。
+- 查看每次上下文编译记录。
 
 系统必须能回答：
 
@@ -198,41 +198,41 @@ Personal Context 不能成为新的黑箱 Memory。
 
 ---
 
-## P12. DSH 是第一 Runtime，不是核心数据所有者
+## P12. DSH 是第一运行时，不是核心数据所有者
 
 第一实现应尽可能复用 DSH 的基础设施。
 
-但核心语义和数据库必须能够脱离 DSH 被其它 Runtime / MCP / Agent 使用。
+但核心语义和数据库必须能够脱离 DSH 被其它运行时 / MCP / Agent 使用。
 
 ---
 
-## P13. Event-driven 优先
+## P13. 事件驱动优先
 
 系统应在有实际触发时工作：
 
-- input；
-- event；
-- change；
-- explicit schedule；
-- revalidation requirement。
+- 输入；
+- 事件；
+- 变化；
+- 显式计划；
+- 重新验证需求。
 
-不把持续 autonomous heartbeat 作为默认架构。
+不把持续自主心跳作为默认架构。
 
 ---
 
 ## P14. 稳定核心语义，开放领域扩展
 
-不要提前构建“全世界 ontology”。
+不要提前构建“全世界本体”。
 
-核心保持小而稳定；设备、科研、健康、资产、财务等通过领域 schema / packs 扩展。
+核心保持小而稳定；设备、科研、健康、资产、财务等通过领域模式 / 包扩展。
 
 ---
 
 ## P15. 外部集成是增量能力，不是成立前提
 
-不假设所有闭源 App 都可连接。
+不假设所有闭源应用都可连接。
 
-优先从系统可靠可观察的 Source 获得价值，再逐步增加 Adapter。
+优先从系统可靠可观察的来源获得价值，再逐步增加适配器。
 
 ---
 
@@ -243,8 +243,8 @@ Personal Context 是设计与研究假设，不是先验正确答案。
 如果：
 
 ```text
-DSH + MemOS / OpenViking / other mature systems
-+ thin adapter
+DSH + MemOS / OpenViking / 其他成熟系统
++ 薄适配器
 ```
 
 已经能以更低复杂度实现相同结果，则应缩小项目，而不是为了维护项目身份继续造层。

@@ -1,202 +1,202 @@
-# Open Questions
+# 开放问题
 
-> **As of:** 2026-08-16  
-> **Status:** Intentionally unresolved  
+> **截至：** 2026-08-16  
+> **状态：** 有意保持未解决  
 >
 > 这里记录尚未冻结的问题。它们不应被 README 或架构图误写成已经决定的事实。
 
 ---
 
-## 1. Database / storage
+## 1. 数据库 / 存储
 
 ### Q1.1 使用什么数据库？
 
 当前只锁定：
 
-> 核心 control plane 必须结构化、可查询、可追溯。
+> 核心控制面必须结构化、可查询、可追溯。
 
 未决定：
 
 - SQLite；
 - PostgreSQL；
-- embedded relational DB；
-- graph DB；
-- relational + graph hybrid；
-- event-sourced / append-only + materialized view。
+- 嵌入式关系数据库；
+- 图数据库；
+- 关系 + 图混合；
+- 事件溯源 / 仅追加 + 物化视图。
 
-第一 prototype 很可能适合 SQLite，但这不是长期决议。
+第一原型很可能适合 SQLite，但这不是长期决议。
 
-### Q1.2 State history 怎么表示？
+### Q1.2 状态历史怎么表示？
 
 候选：
 
-- current row + revision table；
-- temporal rows；
-- event sourcing；
-- provider-native temporal graph。
+- 当前行 + 修订表；
+- 时态行；
+- 事件溯源；
+- 提供方原生时态图。
 
 需要支持：
 
-- current；
-- historical；
-- superseded；
-- retired；
-- revalidation。
+- 当前；
+- 历史；
+- 已被取代；
+- 已退役；
+- 重新验证。
 
-### Q1.3 Claim 是否需要图结构？
+### Q1.3 主张是否需要图结构？
 
-Claim 至少需要：
+主张至少需要：
 
 ```text
-supports
-contradicts
-qualifies
-scope
-source
+支持
+矛盾
+限定
+范围
+来源
 ```
 
-但是否必须使用 Graph DB 尚不明确。
+但是否必须使用图数据库尚不明确。
 
 ### Q1.4 Skill 数据应该如何拆？
 
 需要决定：
 
-- structured metadata；
-- Markdown instructions；
-- executable code；
-- evaluation history；
-- versioning；
-- provider ownership。
+- 结构化元数据；
+- Markdown 指令；
+- 可执行代码；
+- 评估历史；
+- 版本管理；
+- 提供方所有权。
 
 ---
 
-## 2. Ontology / semantics
+## 2. 本体 / 语义
 
-### Q2.1 State / Claim / Skill 是否真的足够且必要？
+### Q2.1 状态 / 主张 / Skill 是否真的足够且必要？
 
-这是设计 thesis，不是教条。
+这是设计论点，不是教条。
 
 需要寻找：
 
 - 无法自然归入三类的重要长期资产；
 - 三类其实可被更简单模型替代的证据；
-- 是否需要 Preference、Goal、Constraint 等独立一级概念。
+- 是否需要偏好、目标、约束等独立一级概念。
 
-### Q2.2 Preference 属于 State 还是独立类型？
+### Q2.2 偏好属于状态还是独立类型？
 
 例如：
 
 ```text
-preferred package manager = pnpm
+首选包管理器 = pnpm
 ```
 
 可能是：
 
-- current State；
-- durable preference；
-- Skill precondition / policy。
+- 当前状态；
+- 持久偏好；
+- Skill 前置条件 / 策略。
 
 需要明确语义。
 
-### Q2.3 Goal / Task / Activity 的关系
+### Q2.3 目标 / 任务 / 活动的关系
 
 当前倾向：
 
-- Activity 是顶层触发；
-- Task 只是 Activity 类型之一；
-- Goal 可以是 durable state / objective。
+- 活动是顶层触发；
+- 任务只是活动类型之一；
+- 目标可以是持久状态 / 目标。
 
-仍需与 DSH 原生 Goal / Todo / Schedule 对齐。
+仍需与 DSH 原生目标 / 待办 / 计划对齐。
 
 ---
 
-## 3. Evidence and authority
+## 3. 证据与权威性
 
-### Q3.1 如何表示 authority？
+### Q3.1 如何表示权威性？
 
 需要避免简单粗暴的固定分数。
 
 可能依赖：
 
-- source type；
-- subject；
-- field；
-- freshness；
-- directness；
-- user confirmation；
-- tool verification；
-- consistency。
+- 来源类型；
+- 主题；
+- 字段；
+- 时效性；
+- 直接性；
+- 用户确认；
+- 工具验证；
+- 一致性。
 
-### Q3.2 同一 Evidence 能支持多个资产吗？
+### Q3.2 同一证据能支持多个资产吗？
 
-例如一次 tool result 可能同时：
+例如一次工具结果可能同时：
 
-- 更新 State；
-- 支持 Claim；
+- 更新状态；
+- 支持主张；
 - 验证 Skill。
 
-数据模型需要避免复制和丢失 lineage。
+数据模型需要避免复制和丢失来源链。
 
-### Q3.3 DSH Session 之外的 Evidence 如何长期引用？
+### Q3.3 DSH 会话之外的证据如何长期引用？
 
-需要设计稳定 locator：
+需要设计稳定定位符：
 
-- file version；
-- URL snapshot；
-- Git commit；
-- paper page；
-- external API record；
-- device probe。
+- 文件版本；
+- URL 快照；
+- Git 提交；
+- 论文页码；
+- 外部 API 记录；
+- 设备探针。
 
 ---
 
-## 4. Assimilation / write-back
+## 4. 信息沉淀 / 写回
 
-### Q4.1 如何从新 Evidence 识别真正值得长期沉淀的变化？
+### Q4.1 如何从新证据识别真正值得长期沉淀的变化？
 
-这是可能比 retrieval 更困难的问题。
+这是可能比检索更困难的问题。
 
 需要区分：
 
-- transient observation；
-- current State；
-- durable Claim；
-- Experience；
-- Skill candidate；
-- noise。
+- 瞬时观察；
+- 当前状态；
+- 持久主张；
+- 经验；
+- Skill 候选；
+- 噪声。
 
-### Q4.2 Proposal 什么时候合并、什么时候并存？
+### Q4.2 修改建议什么时候合并、什么时候并存？
 
 尤其是：
 
-- State conflict；
-- Claim contradiction；
-- duplicate Skill；
-- evidence-only updates。
+- 状态冲突；
+- 主张矛盾；
+- 重复 Skill；
+- 仅证据更新。
 
 ### Q4.3 如何防止 LLM 推测逐渐“洗白”为事实？
 
 需要明确：
 
-- provenance preservation；
-- inference level；
-- confirmation；
-- authority inheritance rules。
+- 来源追溯保留；
+- 推断层级；
+- 确认；
+- 权威性继承规则。
 
 ---
 
-## 5. Governance friction
+## 5. 治理摩擦
 
-### Q5.1 哪些更新可以自动提交？
+### Q5.1 哪些更新可以自动写入？
 
 当前候选：
 
 ```text
-auto-commit
-silent proposal
-batch review
-immediate approval
-never infer
+自动写入
+静默修改建议
+批量审查
+立即审批
+绝不推断
 ```
 
 但没有证明这是正确分级。
@@ -205,197 +205,197 @@ never infer
 
 这是产品生死问题。
 
-需要长期 dogfood 测：
+需要长期自用验证测：
 
-- proposal/day；
-- review time；
-- ignored proposals；
-- false positive；
-- wrong auto-commit；
-- trust recovery。
+- 修改建议/天；
+- 审查时间；
+- 被忽略的修改建议；
+- 误报；
+- 错误自动写入；
+- 信任恢复。
 
 ### Q5.3 是否需要“观察一段时间再确认”？
 
 某些偏好和状态可能不适合立即写入，而应：
 
 ```text
-silent observations
-→ accumulated evidence
-→ proposal
+静默观察
+→ 累积证据
+→ 修改建议
 ```
 
 ---
 
-## 6. Freshness / expiry / revalidation
+## 6. 时效性 / 过期 / 重新验证
 
 ### Q6.1 什么应该主动过期？
 
 候选：
 
-- device software version；
-- location；
-- project phase；
-- active branch；
-- dependency version。
+- 设备软件版本；
+- 位置；
+- 项目阶段；
+- 活动分支；
+- 依赖版本。
 
 有些信息可以 TTL，有些必须事件驱动。
 
-### Q6.2 如何提示 stale？
+### Q6.2 如何提示过时？
 
 可能需要：
 
 ```text
-fresh
-aging
-stale
-needs_revalidation
-unknown
-retired
+未过期
+老化
+过时
+需要重新验证
+未知
+已退役
 ```
 
-### Q6.3 谁负责 revalidation？
+### Q6.3 谁负责重新验证？
 
-- system probe；
-- background schedule；
-- next relevant Activity；
-- user review；
-- provider refresh。
+- 系统探针；
+- 后台计划；
+- 下一个相关活动；
+- 用户审查；
+- 提供方刷新。
 
-需要避免重新走向高成本 autonomous heartbeat。
+需要避免重新走向高成本自主心跳。
 
 ---
 
-## 7. Context Compiler
+## 7. 上下文编译器
 
-### Q7.1 具体 retrieval stack 是什么？
+### Q7.1 具体检索技术栈是什么？
 
 第一版候选：
 
 ```text
-structured query
-+ SQLite FTS
-+ embedding
-+ reranker
+结构化查询
++ SQLite 全文检索
++ 嵌入
++ 重排序模型
 ```
 
-或直接复用 OpenViking / other provider。
+或直接复用 OpenViking / 其他提供方。
 
-需要 benchmark，而不是靠直觉。
+需要基准测试，而不是靠直觉。
 
-### Q7.2 Type-aware handling 真的能显著优于 mature retrieval 吗？
+### Q7.2 类型感知处理真的能显著优于成熟检索吗？
 
 这是核心研究问题之一。
 
 需要比较：
 
 - BM25；
-- vector；
-- hybrid；
-- reranker；
+- 向量；
+- 混合；
+- 重排序模型；
 - MemOS；
 - OpenViking；
-- type-aware compiler。
+- 类型感知编译器。
 
-### Q7.3 哪些 State 应该强制进入 Context？
+### Q7.3 哪些状态应该强制进入上下文？
 
-如果当前 Activity 已明确关联项目 / 设备，一些 current State 可能不应该参与普通 similarity ranking。
+如果当前活动已明确关联项目 / 设备，一些当前状态可能不应该参与普通相似度排序。
 
-需要 formalize。
+需要形式化。
 
-### Q7.4 Claim 冲突如何编译？
+### Q7.4 主张冲突如何编译？
 
-如果两个重要 Claim 冲突：
+如果两个重要主张冲突：
 
 - 都给？
-- 给 summary？
-- 按 scope？
-- 按 evidence strength？
+- 给摘要？
+- 按范围？
+- 按证据强度？
 - 只在需要时展开？
 
-### Q7.5 Context budget 如何动态分配？
+### Q7.5 上下文预算如何动态分配？
 
 需要考虑：
 
-- State；
-- Claim；
+- 状态；
+- 主张；
 - Skill；
-- Evidence；
-- task material；
-- model context window；
-- latency / cost。
+- 证据；
+- 任务材料；
+- 模型上下文窗口；
+- 延迟 / 成本。
 
 ---
 
-## 8. Runtime Compiler
+## 8. 运行时编译器
 
-### Q8.1 是否真的需要独立 Runtime Compiler？
+### Q8.1 是否真的需要独立运行时编译器？
 
 可能的能力：
 
-- Tool exposure；
-- Skill exposure；
-- preset composition；
-- runtime defaults；
-- provider choice。
+- 工具暴露；
+- Skill 暴露；
+- 预设组装；
+- 运行时默认值；
+- 提供方选择。
 
-但也可能通过 DSH Preset + Skill registry + Context prompt 足够解决。
+但也可能通过 DSH 预设 + Skill 注册表 + 上下文提示词足够解决。
 
-必须 benchmark。
+必须基准测试。
 
 ### Q8.2 能否让系统承担部分“模型智能”？
 
 核心实验：
 
-> 强模型第一次完成并沉淀后，第二次能否让明显更弱、更便宜的模型，以更少 token 和 tool calls 稳定完成？
+> 强模型第一次完成并沉淀后，第二次能否让明显更弱、更便宜的模型，以更少 Token 和工具调用稳定完成？
 
-如果不能，Runtime Compiler 的价值需要重新评估。
+如果不能，运行时编译器的价值需要重新评估。
 
 ---
 
-## 9. Disclosure / privacy
+## 9. 披露 / 隐私
 
-### Q9.1 Policy 粒度多细？
+### Q9.1 策略粒度多细？
 
 候选：
 
-- asset；
-- entity；
-- field；
-- scope；
-- target model；
-- provider；
-- purpose；
-- session；
-- local / cloud。
+- 资产；
+- 实体；
+- 字段；
+- 范围；
+- 目标模型；
+- 提供方；
+- 目的；
+- 会话；
+- 本地 / 云端。
 
-### Q9.2 是否需要 redaction / generalization？
+### Q9.2 是否需要脱敏 / 泛化？
 
 例如：
 
 ```text
-local model
-→ exact health value
+本地模型
+→ 精确健康值
 
-trusted cloud
-→ generalized range
+可信云端
+→ 泛化范围
 
-public / unknown
-→ deny
+公开 / 未知
+→ 拒绝
 ```
 
-需要明确 policy language。
+需要明确策略语言。
 
-### Q9.3 credentials 是否永远 never-model？
+### Q9.3 凭据是否永远不进入模型？
 
-可能需要独立 secret plane，而不是 Personal Context 普通 asset。
+可能需要独立密钥平面，而不是 Personal Context 普通资产。
 
 ---
 
-## 10. Provider federation
+## 10. 提供方组合
 
-### Q10.1 Provider contract 应该多薄？
+### Q10.1 提供方契约应该多薄？
 
-Memory Provider 可能只需要：
+记忆提供方可能只需要：
 
 ```text
 search
@@ -405,55 +405,55 @@ revise
 retire
 ```
 
-但 State / Claim / Graph / Documents 不一定适合同一个接口。
+但状态 / 主张 / 图 / 文档不一定适合同一个接口。
 
-### Q10.2 Provider 结果如何保留 provenance？
+### Q10.2 提供方结果如何保留来源追溯？
 
 不能在聚合后只剩文本。
 
-### Q10.3 如何禁止多个 Provider 各自直接注入？
+### Q10.3 如何禁止多个提供方各自直接注入？
 
-需要 DSH 层面的 composition / policy 约定，或统一 pre-step owner。
+需要 DSH 层面的组装 / 策略约定，或统一 pre-step 责任方。
 
 ---
 
-## 11. External apps / cross-device
+## 11. 外部应用 / 跨设备
 
-### Q11.1 大量闭源 App 无法连接怎么办？
+### Q11.1 大量闭源应用无法连接怎么办？
 
 不能假设：
 
 ```text
-所有 Source of Truth
-→ 一个 Adapter
+所有事实来源
+→ 一个适配器
 → 问题解决
 ```
 
 需要研究：
 
-- import/export；
-- user-provided snapshots；
-- accessibility / automation；
-- local bridge；
-- mobile companion；
-- manual confirmation。
+- 导入 / 导出；
+- 用户提供的快照；
+- 无障碍 / 自动化；
+- 本地桥接；
+- 移动伴侣；
+- 手动确认。
 
 ### Q11.2 多设备如何同步？
 
 还没有设计：
 
-- local-first sync；
-- server；
+- 本地优先同步；
+- 服务器；
 - CRDT；
-- encryption；
-- conflict resolution；
-- offline mode。
+- 加密；
+- 冲突解决；
+- 离线模式。
 
 第一阶段可以不解决。
 
-### Q11.3 是否应该让 Personal Context 自己成为某些领域的 Source of Truth？
+### Q11.3 是否应该让 Personal Context 自己成为某些领域的事实来源？
 
-例如小型 device / environment data 可以。
+例如小型设备 / 环境数据可以。
 
 但财务、文献、Git 等应尽量保留专业系统。
 
@@ -461,47 +461,47 @@ retire
 
 ---
 
-## 12. Human UI
+## 12. 人工界面
 
-### Q12.1 第一版最小 UI 是什么？
+### Q12.1 第一版最小界面是什么？
 
 当前候选：
 
 ```text
-Overview
-Entities
-Knowledge
+概览
+实体
+知识
 Skills
-Activity
-Sources
+活动
+来源
 ```
 
-但 prototype 可能只需要：
+但原型可能只需要：
 
-- State table；
-- Evidence trace；
-- Proposal queue；
-- Context Run；
-- edit / accept / reject。
+- 状态表；
+- 证据追踪；
+- 修改建议队列；
+- 上下文编译记录；
+- 编辑 / 接受 / 拒绝。
 
 ### Q12.2 怎样把治理做到低摩擦？
 
-UI 不应该只是 Memory admin console。
+界面不应该只是记忆管理控制台。
 
 需要研究：
 
-- stale review；
-- batch proposal；
-- change diff；
-- confidence / source display；
-- one-click verify；
-- context debugging。
+- 过时审查；
+- 批量修改建议；
+- 变更差异；
+- 置信度 / 来源展示；
+- 一键验证；
+- 上下文调试。
 
 ---
 
-## 13. DSH / project packaging
+## 13. DSH / 项目打包
 
-### Q13.1 一个 repo 还是 Core + Distribution 两个 repo？
+### Q13.1 一个仓库还是核心 + 发行版两个仓库？
 
 当前默认：
 
@@ -510,63 +510,63 @@ UI 不应该只是 Memory admin console。
 
 尚未需要立刻拆仓库。
 
-### Q13.2 Core 如何保持 runtime-neutral？
+### Q13.2 核心如何保持运行时中立？
 
-需要防止 schema / API 直接依赖 DSH event internals。
+需要防止模式 / API 直接依赖 DSH 事件内部机制。
 
-### Q13.3 DSH developer preview 带来的兼容风险怎么控制？
+### Q13.3 DSH 开发者预览带来的兼容风险怎么控制？
 
 第一版应尽量：
 
 - 少量核心插件；
-- 清晰 adapter；
-- 不 fork / patch core；
-- 避免十几个深耦合 package。
+- 清晰适配器；
+- 不 fork / 不修补核心；
+- 避免十几个深耦合包。
 
 ---
 
-## 14. Evaluation
+## 14. 评估
 
-### Q14.1 最好的 benchmark 是什么？
+### Q14.1 最好的基准测试是什么？
 
-不仅测 recall。
+不仅测召回。
 
 候选指标：
 
-- required-context recall；
-- irrelevant-context ratio；
-- stale State rate；
-- conflict coverage；
-- sensitive disclosure rate；
-- context token；
-- latency；
-- wrong write rate；
-- provenance coverage；
-- repeat-task tool calls；
-- weaker-model success；
-- user maintenance time。
+- 所需上下文召回率；
+- 无关上下文比例；
+- 过时状态率；
+- 冲突覆盖；
+- 敏感披露率；
+- 上下文 Token；
+- 延迟；
+- 错误写入率；
+- 来源追溯覆盖；
+- 重复任务工具调用；
+- 弱模型成功率；
+- 用户维护时间。
 
-### Q14.2 需要 synthetic benchmark 还是 long-term dogfood？
+### Q14.2 需要合成基准测试还是长期自用验证？
 
 两者都需要：
 
-- synthetic / curated context set：可控比较；
-- dogfood：验证治理成本和长期状态正确性。
+- 合成 / 精选上下文集：可控比较；
+- 自用验证：验证治理成本和长期状态正确性。
 
 ### Q14.3 什么结果意味着项目应该缩小？
 
-如果成熟系统 + thin adapter：
+如果成熟系统 + 薄适配器：
 
-- stale state 很少；
-- disclosure 可控；
-- user maintenance 更低；
-- repeat-task efficiency 相当；
+- 过时状态很少；
+- 披露可控；
+- 用户维护更低；
+- 重复任务效率相当；
 
-那么独立 Personal Context layer 的复杂度可能不值得。
+那么独立 Personal Context 层的复杂度可能不值得。
 
 ---
 
-## 15. Product / communication
+## 15. 产品 / 传播
 
 ### Q15.1 最终最强宣传点是什么？
 
@@ -574,16 +574,16 @@ UI 不应该只是 Memory admin console。
 
 目前相对有潜力的方向：
 
-- Memory stays current, not just grows；
-- structured state instead of model-managed Markdown；
-- from retrieval to prepared agent environment；
-- visible state / stale / proposals / context runs；
-- system intelligence reduces model intelligence requirements。
+- 记忆保持当前，而不只是增长；
+- 结构化状态，而不是模型维护的 Markdown；
+- 从检索到预置好的 Agent 环境；
+- 可见的状态 / 过时项 / 修改建议 / 上下文编译记录；
+- 系统智能降低模型智能要求。
 
-不应再把“跨 AI”“Memory Viewer”“用户拥有 Memory”单独当成独有卖点。
+不应再把“跨 AI”“记忆查看器”“用户拥有记忆”单独当成独有卖点。
 
 ### Q15.2 `Personal Context` 是否最终是产品名？
 
-当前 repo 名继续保留。
+当前仓库名继续保留。
 
-未来如果出现 `Personal DSH Distribution`，它更可能是 delivery / distribution 名称，而不是替代核心概念。
+未来如果出现 `Personal DSH Distribution`，它更可能是交付 / 发行版名称，而不是替代核心概念。

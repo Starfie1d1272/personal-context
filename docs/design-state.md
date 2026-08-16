@@ -1,9 +1,9 @@
-# Current Design State
+# 当前设计状态
 
-> **Status:** Canonical working snapshot  
-> **As of:** 2026-08-16  
-> **Purpose:** 将截至目前多轮讨论中已经收敛的结论、当前默认架构、研究假设和开放问题分开记录。  
-> **Rule:** 后续新讨论默认只修改本文件中的局部状态，不重新从零定义整个项目。  
+> **状态：** 当前权威工作快照  
+> **截至：** 2026-08-16  
+> **目的：** 将截至目前多轮讨论中已经收敛的结论、当前默认架构、研究假设和开放问题分开记录。  
+> **规则：** 后续新讨论默认只修改本文件中的局部状态，不重新从零定义整个项目。  
 >
 > `origin.md` 继续负责记录项目为什么出现；本文不覆盖或改写项目起源。
 
@@ -13,7 +13,7 @@
 
 **Personal Context 是一个面向长期 AI 协作的、数据库支撑的用户自主认知与上下文基础设施实验。**
 
-它不试图再造一个 Agent Runtime、Memory OS 或 RAG 系统，而是研究如何把关于用户、项目和现实环境的长期信息以明确语义维护为可查询、可追溯、可治理、可更新的长期资产，并在每次活动中为 Agent 生成真正需要且允许披露的运行环境。
+它不试图再造一个 Agent 运行时、记忆操作系统或 RAG 系统，而是研究如何把关于用户、项目和现实环境的长期信息以明确语义维护为可查询、可追溯、可治理、可更新的长期资产，并在每次活动中为 Agent 生成真正需要且允许披露的运行环境。
 
 当前最重要的区别不是“记住更多”，而是：
 
@@ -30,26 +30,26 @@
 
 本文使用以下标签：
 
-- **Stable**：当前认为已经足够稳定，除非出现新证据或明确设计决议，不应被普通实现讨论反复推翻。
-- **Baseline**：当前默认实现方向，可以调整，但新方案需要说明为什么更好。
-- **Hypothesis**：有价值但尚未被实验或长期 dogfood 证明。
-- **Open**：尚未决定。
-- **Rejected / Deprioritized**：已经明确不应作为当前核心方向，或至少第一阶段不做。
+- **已确定**：当前认为已经足够稳定，除非出现新证据或明确设计决议，不应被普通实现讨论反复推翻。
+- **当前方案**：当前默认实现方向，可以调整，但新方案需要说明为什么更好。
+- **待验证假设**：有价值但尚未被实验或长期自用验证证明。
+- **待解决**：尚未决定。
+- **已否定 / 暂不考虑**：已经明确不应作为当前核心方向，或至少第一阶段不做。
 
 ---
 
-## 3. Stable：已经锁定的核心结论
+## 3. 已确定：已经锁定的核心结论
 
 ### 3.1 长期认知的控制面必须结构化
 
 Personal Context 的核心长期资产不能主要依赖 Markdown 文件和 LLM 自主管理。
 
-需要一个 **schema-backed、tool-mediated、可查询、可约束、可版本化、可追溯的数据库/control plane**。
+需要一个 **由模式支撑、由工具中介、可查询、可约束、可版本化、可追溯的数据库/控制面**。
 
 这并不意味着所有内容都必须进入数据库：
 
-- State、Claim 元数据、EvidenceRef、Proposal、Policy、Scope、关系和生命周期信息适合结构化保存；
-- SOP、Skill 说明、Episode、长文本、原始文档和附件仍然可以保留为 Markdown、文件、Blob 或外部 Provider。
+- 状态、主张元数据、证据引用、修改建议、策略、范围、关系和生命周期信息适合结构化保存；
+- SOP、Skill 说明、经验片段、长文本、原始文档和附件仍然可以保留为 Markdown、文件、Blob 或外部提供方。
 
 当前稳定原则是：
 
@@ -57,150 +57,150 @@ Personal Context 的核心长期资产不能主要依赖 Markdown 文件和 LLM 
 
 具体数据库技术仍未锁定。
 
-### 3.2 Memory 是基础能力，不是最高层语义
+### 3.2 记忆是基础能力，不是最高层语义
 
-Memory 可以负责保存、压缩、关联、召回长期信息，也可以成为重要 Provider。
+记忆可以负责保存、压缩、关联、召回长期信息，也可以成为重要提供方。
 
 但不能把当前状态、历史经历、科学主张、用户偏好和 Skills 全部重新压成一个统一的：
 
 ```text
-memory item = text + timestamp + vector + importance
+记忆项 = 文本 + 时间戳 + 向量 + 重要性
 ```
 
-Personal Context 需要在 Memory 之上保留明确的长期决策语义。
+Personal Context 需要在记忆之上保留明确的长期决策语义。
 
-### 3.3 State / Claim / Skill 按决策语义区分
+### 3.3 状态 / 主张 / Skill 按决策语义区分
 
 当前核心模型至少区分三类长期资产：
 
-- **State**：Agent 据此判断“现在是什么”；
-- **Claim**：Agent 据此判断“我们有什么理由相信什么”；
+- **状态**：Agent 据此判断“现在是什么”；
+- **主张**：Agent 据此判断“我们有什么理由相信什么”；
 - **Skill**：Agent 据此判断“在什么条件下应该怎么做”。
 
 区别不在三个名字本身，而在错误和冲突发生后治理方式不同：
 
 ```text
-State 冲突
+状态冲突
 → 解析当前有效、权威的值
 
-Claim 冲突
-→ 允许并存，保留 support / contradict / qualify / scope
+主张冲突
+→ 允许并存，保留支持 / 反对 / 限定 / 范围
 
 Skill 失败
 → 修改适用条件、步骤、验证方式或可靠性
 ```
 
-这套分类仍然是 **design thesis**，最终是否值得保留必须通过实验验证；但在当前设计中它是默认语义基线。
+这套分类仍然是 **设计论点（design thesis）**，最终是否值得保留必须通过实验验证；但在当前设计中它是默认语义基线。
 
-### 3.4 Evidence 不等于事实
+### 3.4 证据不等于事实
 
-所有长期认识都应能够追溯到 Evidence。
+所有长期认识都应能够追溯到证据。
 
-Evidence 可以来自：
+证据可以来自：
 
 - 用户消息；
 - Agent 会话；
-- Tool call / Tool result；
-- DSH Session Log；
-- Git / 文件 /系统探针；
+- 工具调用 / 工具结果；
+- DSH 会话日志；
+- Git / 文件 / 系统探针；
 - 网页、论文、数据集；
 - 外部 API；
 - 一次完整任务轨迹。
 
-Evidence 只回答：
+证据只回答：
 
 > **“凭什么产生这个判断？”**
 
-它本身不自动成为 State、Claim 或 Skill。
+它本身不自动成为状态、主张或 Skill。
 
-DSH Session Log 因此非常适合作为重要的 **Evidence Ledger**，但不能直接充当“真相数据库”。
+DSH 会话日志因此非常适合作为重要的 **证据账本**，但不能直接充当“真相数据库”。
 
-### 3.5 长期写入必须经过 Evidence → Proposal → Governance → Commit
+### 3.5 长期写入必须经过证据 → 修改建议 → 治理 → 写入
 
 当前稳定写入模型：
 
 ```text
-Observation / Conversation / Tool result
+观察 / 对话 / 工具结果
                 ↓
-             Evidence
+             证据
                 ↓
-      Candidate interpretation
+          候选解释
                 ↓
-             Proposal
+           修改建议
                 ↓
-  authority / conflict / risk / policy
+      权威性 / 冲突 / 风险 / 策略
                 ↓
-            Governance
+             治理
                 ↓
-              Commit
+             写入
 ```
 
 LLM 可以提出“世界可能变了”，但不天然拥有修改长期权威状态的权力。
 
-不同 Evidence Source 可以拥有不同的 authority 和自动写入能力；具体等级仍在探索。
+不同证据来源可以拥有不同的权威性和自动写入能力；具体等级仍在探索。
 
 ### 3.6 长期信息必须有生命周期，而不是只增长
 
-State 和其它长期资产需要显式考虑：
+状态和其它长期资产需要显式考虑：
 
-- created / observed / verified time；
+- 创建 / 观察 / 验证时间；
 - valid_from / valid_until；
-- freshness；
-- superseded / retired；
-- stale / needs_revalidation；
+- 时效性；
+- 被取代 / 已停用；
+- 过时 / 需要重新验证；
 - 来源权威性；
 - 历史版本。
 
 “记住了”不等于“永远继续影响未来 Agent”。
 
-### 3.7 读取不是 Search → Prompt，而是 Context Assembly / Compilation
+### 3.7 读取不是搜索 → 提示词，而是上下文组装 / 编译
 
 检索只是候选生成的一部分。
 
 当前稳定的读取思想是：
 
 ```text
-Activity
+活动
   ↓
-Scope / hard constraints
+范围 / 硬性约束
   ↓
-Candidate retrieval
+候选检索
   ↓
-Fusion / rerank
+融合 / 重排序
   ↓
-Type-aware handling
+类型感知处理
   ↓
-Budget
+预算
   ↓
-Disclosure policy
+披露策略
   ↓
-Serialization
+序列化
   ↓
-Agent environment
+Agent 环境
 ```
 
 其中：
 
 > **相关性可以是概率的，权力边界必须是确定的。**
 
-Embedding、BM25、reranker、小模型甚至 LLM 可以判断“是否相关”；但权限、隐私、撤销、过期、允许给哪个模型看等边界不能依赖主模型临场判断。
+Embedding、BM25、重排序模型、小模型甚至 LLM 可以判断“是否相关”；但权限、隐私、撤销、过期、允许给哪个模型看等边界不能依赖主模型临场判断。
 
-### 3.8 Provider 可以很多，但最终上下文组装责任必须唯一
+### 3.8 提供方可以很多，但最终上下文组装责任必须唯一
 
 未来可以同时存在：
 
-- 结构化 Personal Context DB；
+- 结构化 Personal Context 数据库；
 - MemOS；
 - OpenViking；
 - Graphiti；
-- DSH Session；
-- Files / Git / Zotero；
+- DSH 会话；
+- 文件 / Git / Zotero；
 - Skills；
-- 其它 Provider。
+- 其它提供方。
 
-Provider 可以提供候选，但不应每个插件都独立把内容偷偷 inject 到 Prompt。
+提供方可以提供候选，但不应每个插件都独立把内容偷偷注入到提示词。
 
-一次 Agent invocation 最终必须有一个明确的 **Context Assembly & Disclosure Owner**，能够解释：
+一次 Agent 调用最终必须有一个明确的 **上下文组装与披露负责人**，能够解释：
 
 - 为什么选中；
 - 为什么没选中；
@@ -209,22 +209,22 @@ Provider 可以提供候选，但不应每个插件都独立把内容偷偷 inje
 - 为什么允许披露；
 - 最终给了 Agent 什么。
 
-### 3.9 用户界面是系统要求，不是附加 Viewer
+### 3.9 用户界面是系统要求，不是附加查看器
 
 任何进入 Personal Context 长期认知范围的内容都应该对用户可见、可查询和可追溯。
 
 用户至少需要能够：
 
-- 浏览 State；
-- 查看 Claims；
+- 浏览状态；
+- 查看主张；
 - 管理 Skills；
 - 修改信息；
 - 查看历史和冲突；
-- 审核 Proposals；
-- 查看 Evidence / provenance；
-- 查看哪些 Agent / Model 可以访问；
+- 审核修改建议；
+- 查看证据 / 来源追溯；
+- 查看哪些 Agent / 模型可以访问；
 - 导出和删除；
-- 查看一次 Agent Context Run 实际包含和排除了什么。
+- 查看一次 Agent 上下文编译记录实际包含和排除了什么。
 
 两个核心问题必须能够直接回答：
 
@@ -232,194 +232,194 @@ Provider 可以提供候选，但不应每个插件都独立把内容偷偷 inje
 
 > **“为什么这一次 Agent 能 / 不能看到它？”**
 
-### 3.10 DSH 是第一 Runtime，不是数据所有者
+### 3.10 DSH 是第一运行时，不是数据所有者
 
-第一阶段使用 DSH 作为主要 Runtime 和 reference implementation，复用其：
+第一阶段使用 DSH 作为主要运行时和参考实现，复用其：
 
-- Session；
-- Agent lifecycle；
-- Tools；
+- 会话；
+- Agent 生命周期；
+- 工具；
 - Skills；
-- Storage；
-- Permissions / Approval；
-- Sandbox；
-- Web UI / client extension；
+- 存储；
+- 权限 / 审批；
+- 沙箱；
+- Web 界面 / 客户端扩展；
 - Profile / Bundle / Preset；
-- MCP / external integration；
-- subagent / workflow 等。
+- MCP / 外部集成；
+- 子代理 / 工作流等。
 
 但 Personal Context 的核心语义和数据模型不能依赖 DSH 的私有实现。
 
 长期应允许：
 
 ```text
-Personal Context Core
+Personal Context 核心
 ├── DSH
 ├── MCP
-├── other agent runtimes
-└── future adapters
+├── 其它 Agent 运行时
+└── 未来适配器
 ```
 
-### 3.11 Event-driven 优先于 autonomous heartbeat
+### 3.11 事件驱动优先于自主心跳
 
 系统不应为了“保持智能”持续让 LLM 醒来思考。
 
 优先由以下触发：
 
 - 用户输入；
-- Tool / system event；
+- 工具 / 系统事件；
 - 外部事件；
-- 明确 schedule；
+- 明确计划；
 - 数据变化；
-- 必要的 revalidation。
+- 必要的重新验证。
 
 默认是：
 
 ```text
-event → 必要处理 → 结束
+事件 → 必要处理 → 结束
 ```
 
-而不是持续 heartbeat → LLM。
+而不是持续心跳 → LLM。
 
 ### 3.12 稳定核心语义，开放领域扩展
 
-核心不尝试设计覆盖整个现实世界的万能 ontology。
+核心不尝试设计覆盖整个现实世界的万能本体。
 
 稳定的是少量基础概念，例如：
 
 - Entity；
-- State；
-- Claim；
+- 状态；
+- 主张；
 - Skill；
-- EvidenceRef；
-- Proposal；
+- 证据引用；
+- 修改建议；
 - Relation；
 - Policy；
 - Subject；
-- Scope。
+- 范围。
 
-科研、软件工程、设备、健康、资产等领域通过扩展 schema / domain pack 表达。
+科研、软件工程、设备、健康、资产等领域通过扩展模式 / 领域包表达。
 
 ---
 
-## 4. Baseline：当前默认架构
+## 4. 当前方案：当前默认架构
 
 ### 4.1 控制面与内容面
 
 ```text
-Structured control plane
-├── Entities
-├── States
-├── Claims
-├── Skill metadata
-├── Evidence references
-├── Proposals
-├── Relations
-├── Policies
-├── Scopes
-├── lifecycle / revision metadata
-└── Agent Context Runs
+结构化控制面
+├── 实体
+├── 状态
+├── 主张
+├── Skill 元数据
+├── 证据引用
+├── 修改建议
+├── 关系
+├── 策略
+├── 范围
+├── 生命周期 / 修订元数据
+└── Agent 上下文编译记录
 
-Content plane
+内容面
 ├── Markdown SOP
-├── Skill instructions
-├── executable code
-├── Episode / summaries
-├── raw files
-├── documents
-├── DSH Session Log
-└── external providers
+├── Skill 说明
+├── 可执行代码
+├── 经验片段 / 摘要
+├── 原始文件
+├── 文档
+├── DSH 会话日志
+└── 外部提供方
 ```
 
 ### 4.2 两条主要长期闭环
 
-#### Reality / Truth Loop
+#### 现实 / 事实循环
 
 ```text
-Observation
+观察
    ↓
-Evidence
+证据
    ↓
-State Proposal
+状态修改建议
    ↓
-Verification / Governance
+验证 / 治理
    ↓
-Canonical State
+当前权威状态
    ↓
-revalidation / supersession / retirement
+重新验证 / 取代 / 停用
 ```
 
-#### Learning Loop
+#### 学习闭环
 
 ```text
-Session / Experience
+会话 / 经验
    ↓
-Pattern
+模式
    ↓
-Skill Candidate
+Skill 候选
    ↓
-Verification / Evaluation
+验证 / 评估
    ↓
 Skill
    ↓
-Reuse
+复用
    ↓
-new Experience
+新经验
 ```
 
-两条 Loop 可以共享 Evidence 和工具，但不能把 Experience 自动“晋升”为 Truth。
+两条循环可以共享证据和工具，但不能把经验自动“晋升”为事实。
 
-### 4.3 Context Compiler
+### 4.3 上下文编译器
 
-Context Compiler 负责：
+上下文编译器负责：
 
 > **模型这一次需要看到什么？**
 
 默认输入包括：
 
 - 当前活动；
-- 用户 / workspace / project；
-- 当前 Agent / preset；
+- 用户 / 工作区 / 项目；
+- 当前 Agent / 预设；
 - 当前模型；
 - 当前工具；
-- token / latency budget；
+- token / 延迟预算；
 - Personal Context；
-- Memory / Knowledge / Skill providers。
+- 记忆 / 知识 / Skill 提供方。
 
-### 4.4 第一实现优先处理 Current State
+### 4.4 第一实现优先处理当前状态
 
 第一阶段优先验证最清晰的闭环：
 
 ```text
-State
-→ 按需 Context
-→ Agent action
-→ new Evidence
-→ Proposal
-→ Governance
-→ State update
+状态
+→ 按需上下文
+→ Agent 行动
+→ 新证据
+→ 修改建议
+→ 治理
+→ 状态更新
 ```
 
-长期 Memory / Skill Evolution 可以随后接入，避免第一个实验退化成“比较哪个 Memory Engine recall 更好”。
+长期记忆 / Skill 演化可以随后接入，避免第一个实验退化成“比较哪个记忆引擎召回更好”。
 
 ---
 
-## 5. Hypothesis：当前值得探索但尚未锁定
+## 5. 待验证假设：当前值得探索但尚未锁定
 
-### 5.1 Runtime Compiler
+### 5.1 运行时编译器
 
-除了 Context Compiler，还可能需要：
+除了上下文编译器，还可能需要：
 
 ```text
-Context Compiler
+上下文编译器
 → 模型应该看到什么
 
-Runtime Compiler
+运行时编译器
 → Agent 应该拥有什么
-   tools / skills / preset / runtime defaults / policy
+   工具 / Skills / 预设 / 运行时默认配置 / 策略
 ```
 
-目标是把一部分原本依赖模型“读懂并记得使用”的智能下沉到 Harness。
+目标是把一部分原本依赖模型“读懂并记得使用”的智能下沉到执行框架（Harness）。
 
 例：
 
@@ -428,42 +428,42 @@ os = macOS
 package_manager = pnpm
 
 → 加载 macOS / pnpm Skill
-→ 不加载 Windows-only Skill
-→ package-management tool 使用对应 defaults
+→ 不加载仅 Windows 的 Skill
+→ 包管理工具使用对应默认配置
 ```
 
-这是当前很有潜力的方向，但尚未证明必须独立成为 Compiler。
+这是当前很有潜力的方向，但尚未证明必须独立成为编译器。
 
 ### 5.2 分级治理
 
-如果所有 Proposal 都要求人工确认，系统不可长期使用。
+如果所有修改建议都要求人工确认，系统不可长期使用。
 
 候选模型：
 
 ```text
-auto-commit
-silent proposal
-batch review
-immediate approval
-never infer
+自动写入
+静默修改建议
+批量审查
+即时审批
+绝不推断
 ```
 
-如何按 authority、risk、sensitivity、reversibility、confidence 分级，仍需 dogfood。
+如何按权威性、风险、敏感度、可逆性、置信度分级，仍需自用验证。
 
-### 5.3 Provider abstraction
+### 5.3 提供方抽象
 
-Memory、State、Graph、Documents 等是否需要统一 provider contract，以及 contract 应多薄，尚未决定。
+记忆、状态、图、文档等是否需要统一提供方契约，以及契约应多薄，尚未决定。
 
 ### 5.4 Personal DSH Distribution
 
-基于 DSH 的 Profile / Bundle 做一套 Personal AI “整合包”是很合理的交付和 dogfood 方式。
+基于 DSH 的 Profile / Bundle 做一套 Personal AI “整合包”是很合理的交付和自用验证方式。
 
 但当前层次判断是：
 
-- **Personal Context**：核心自研语义 / control plane；
+- **Personal Context**：核心自研语义 / 控制面；
 - **Personal DSH Distribution**：可能的第一产品化 / 组合发行方式。
 
-Distribution 不替代 Core 的项目身份。
+发行（Distribution）不替代核心的项目身份。
 
 ---
 
@@ -471,17 +471,17 @@ Distribution 不替代 Core 的项目身份。
 
 ### DSH
 
-**角色：** 第一 Runtime / composition substrate。  
-**不重做：** Agent loop、session、tools、storage framework、skills runtime、permissions、sandbox 等。  
-**核心用法：** Session Log 作为 Evidence 来源，pre-step / service / storage / UI extension 作为实现落点。
+**角色：** 第一运行时 / 组合底层。  
+**不重做：** Agent 循环、会话、工具、存储框架、Skills 运行时、权限、沙箱等。  
+**核心用法：** 会话日志作为证据来源，pre-step / service / storage / UI 扩展作为实现落点。
 
 ### GenericAgent
 
 **角色：** 重要设计参考，尤其是：
 
-- Contextual Information Density；
-- Experience → SOP / code / Skill；
-- 长期 Learning Loop。
+- 上下文信息密度；
+- 经验 → SOP / 代码 / Skill；
+- 长期学习闭环。
 
 不直接继承：
 
@@ -491,29 +491,29 @@ Distribution 不替代 Core 的项目身份。
 
 ### MemOS
 
-**角色：** 重要 Memory / Learning Provider 候选 + baseline + reference implementation。
+**角色：** 重要记忆 / 学习提供方候选 + 基线 + 参考实现。
 
 可复用其长期记忆、经验抽取、策略 / Skill 演化等能力。
 
-MemOS 产生的“世界认识”进入 Personal Context 时，默认应视为 Evidence / Candidate / Proposal，而不是无条件成为 authoritative State。
+MemOS 产生的“世界认识”进入 Personal Context 时，默认应视为证据 / 候选 / 修改建议，而不是无条件成为权威状态。
 
 ### OpenViking
 
-**角色：** Context Database / hierarchical retrieval 的重要 baseline 或 Provider。
+**角色：** 上下文数据库 / 分层检索的重要基线或提供方。
 
-不重做其已经成熟的分层组织、retrieval / rerank 思路；重点比较其输出进入长期治理层后仍存在什么问题。
+不重做其已经成熟的分层组织、检索 / 重排序思路；重点比较其输出进入长期治理层后仍存在什么问题。
 
 ### Graphiti
 
-**角色：** temporal facts / provenance / graph provider 或 baseline。
+**角色：** 时间事实 / 来源追溯 / 图提供方或基线。
 
-不把“有时间和 provenance 的 State”本身当作创新；重点研究 authoritative current state、Claim semantics 与最终 Context 正确性。
+不把“有时间和来源追溯的状态”本身当作创新；重点研究权威当前状态、主张语义与最终上下文正确性。
 
 ### TencentDB Agent Memory
 
-**角色：** ACL / asset management / Agent loadout / hybrid retrieval 的重要对照。
+**角色：** ACL / 资产管理 / Agent 负载配置 / 混合检索的重要对照。
 
-不把“有权限、给不同 Agent 配不同知识”本身当作创新；继续研究更细粒度 disclosure 和最终 Context responsibility。
+不把“有权限、给不同 Agent 配不同知识”本身当作创新；继续研究更细粒度的披露和最终上下文责任。
 
 ---
 
@@ -521,65 +521,65 @@ MemOS 产生的“世界认识”进入 Personal Context 时，默认应视为 E
 
 当前不应单独宣传为项目创新：
 
-- 长期 Memory；
-- 跨 Session recall；
-- 分层 Context；
-- hybrid retrieval；
-- embedding / reranker；
-- temporal facts；
-- provenance；
+- 长期记忆；
+- 跨会话召回；
+- 分层上下文；
+- 混合检索；
+- embedding / 重排序模型；
+- 时间事实；
+- 来源追溯；
 - ACL；
-- Agent loadout；
-- Experience → Skill；
-- Context injection；
-- Memory Viewer；
-- “不同 Agent 可以共享 Memory”。
+- Agent 负载配置；
+- 经验 → Skill；
+- 上下文注入；
+- 记忆查看器；
+- “不同 Agent 可以共享记忆”。
 
 当前真正值得验证的是这些能力之上的组合架构：
 
 ```text
-structured long-term control plane
-+ decision-semantic State / Claim / Skill
-+ evidence-backed write governance
-+ lifecycle / freshness
-+ type-aware context assembly
-+ deterministic disclosure
-+ provider federation
-+ user-visible auditability
+结构化长期控制面
++ 决策语义的状态 / 主张 / Skill
++ 证据支撑的写入治理
++ 生命周期 / 时效性
++ 类型感知的上下文组装
++ 确定性披露
++ 提供方组合
++ 用户可见的可审计性
 ```
 
-这应称为 **architectural hypothesis / design thesis**，不是“世界首创”。
+这应称为 **架构假设 / 设计论点**，不是“世界首创”。
 
 ---
 
-## 8. 外部应用与 Source of Truth 的现实边界
+## 8. 外部应用与事实来源的现实边界
 
-长期愿景允许 Git、Zotero、Finance、Home Inventory、Calendar 等成为外部 Source / Provider。
+长期愿景允许 Git、Zotero、财务、家庭资产、日历等成为外部来源 / 提供方。
 
 但当前不假设：
 
-> “所有闭源 App 都能轻易接入 Personal Context。”
+> “所有闭源应用都能轻易接入 Personal Context。”
 
 现实中很多应用：
 
 - 没有 API；
 - 数据在不同设备；
-- schema 不透明；
+- 模式不透明；
 - 自动化受限；
 - 导出不稳定；
 - 只有 UI。
 
-因此外部 Adapter 是增量能力，不是系统成立的前提。
+因此外部适配器是增量能力，不是系统成立的前提。
 
 第一阶段首先依赖 Agent 自己能够可靠观察的世界：
 
-- DSH Session；
-- Tool results；
-- workspace / files；
+- DSH 会话；
+- 工具结果；
+- 工作区 / 文件；
 - Git；
-- shell / system probes；
-- user explicit input；
-- 少量高质量开放 integration。
+- Shell / 系统探针；
+- 用户显式输入；
+- 少量高质量开放集成。
 
 ---
 
@@ -589,37 +589,37 @@ structured long-term control plane
 
 # 设备与项目运行环境
 
-最小闭环：
+最小必要闭环：
 
 ```text
-DSH Session / system probe
+DSH 会话 / 系统探针
         ↓
-      Evidence
+      证据
         ↓
-  Personal Context DB
+  Personal Context 数据库
         ↓
-   Context Compiler
+   上下文编译器
         ↓
        Agent
         ↓
-   new Tool Evidence
+   新工具证据
         ↓
-      Proposal
+      修改建议
         ↓
-  user / policy review
+  用户 / 策略审查
         ↓
-       Commit
+       写入
 ```
 
 需要展示：
 
-- 当前 device / OS / shell / project environment；
-- provenance；
-- freshness；
-- Context Run included / excluded；
-- 状态变更 Proposal；
-- Accept / edit / reject；
-- history。
+- 当前设备 / 操作系统 / Shell / 项目运行环境；
+- 来源追溯；
+- 时效性；
+- 上下文编译记录包含 / 排除；
+- 状态变更修改建议；
+- 接受 / 编辑 / 拒绝；
+- 历史。
 
 ---
 
@@ -628,30 +628,30 @@ DSH Session / system probe
 第一阶段至少比较：
 
 ```text
-A. DSH only
+A. 仅 DSH
 
-B. DSH + mature Memory / retrieval baseline
+B. DSH + 成熟记忆 / 检索基线
 
-C. DSH + baseline
-   + structured current state
-   + evidence-backed write governance
-   + type-aware context assembly
-   + disclosure policy
+C. DSH + 基线
+   + 结构化当前状态
+   + 证据支撑的写入治理
+   + 类型感知的上下文组装
+   + 披露策略
 ```
 
 关注指标：
 
 - 用户重复解释背景的次数；
-- Context token；
-- stale / wrong State 注入次数；
+- 上下文 token；
+- 过时 / 错误状态注入次数；
 - 错误长期写入次数；
-- provenance coverage；
+- 来源追溯覆盖率；
 - 不必要敏感信息披露；
-- 第二次完成类似任务的 token / tool calls / success rate；
+- 第二次完成类似任务的 token / 工具调用 / 成功率；
 - 用户维护成本；
 - 更弱 / 更便宜模型能否复用已沉淀能力。
 
-如果成熟 Memory / Context 系统 + 很薄 adapter 已经解决绝大多数问题，应缩小甚至放弃独立层。
+如果成熟记忆 / 上下文系统 + 很薄的适配器已经解决绝大多数问题，应缩小甚至放弃独立层。
 
 ---
 
@@ -661,18 +661,18 @@ C. DSH + baseline
 
 最重要的包括：
 
-- exact DB / schema；
-- State、Claim、Skill 的最小必要模型；
+- 具体数据库 / 模式；
+- 状态、主张、Skill 的最小必要模型；
 - 生命周期和过期机制；
-- Proposal 分级治理；
-- Context Compiler 的 retrieval / rerank / budget 设计；
-- Runtime Compiler 是否必要；
-- provider contract；
+- 修改建议分级治理；
+- 上下文编译器的检索 / 重排序 / 预算设计；
+- 运行时编译器是否必要；
+- 提供方契约；
 - UI 信息架构；
 - 外部数据接入；
-- cross-device；
-- privacy / disclosure granularity；
-- benchmark 与真实长期 dogfood。
+- 跨设备；
+- 隐私 / 披露粒度；
+- 基准测试与真实长期自用验证。
 
 ---
 
@@ -680,7 +680,7 @@ C. DSH + baseline
 
 - [`origin.md`](./origin.md)：为什么这个项目出现；不要倒灌后来的架构。
 - [`vision.md`](./vision.md)：希望最终形成怎样的用户体验和长期能力。
-- [`design-state.md`](./design-state.md)：**当前 canonical design state**。
+- [`design-state.md`](./design-state.md)：**当前权威设计状态**。
 - [`principles.md`](./principles.md)：稳定原则。
 - [`architecture.md`](./architecture.md)：当前实现基线。
 - [`related-work.md`](./related-work.md)：现有系统解决了什么、我们不应重复声称什么。
@@ -690,7 +690,7 @@ C. DSH + baseline
 后续发生冲突时，应优先判断：
 
 1. 是不是 `origin` 与当前架构职责不同；
-2. 是 Stable principle 被新证据推翻；
-3. 还是仅仅某个 Baseline / Hypothesis 发生了变化。
+2. 是已确定原则被新证据推翻；
+3. 还是仅仅某个当前方案 / 待验证假设发生了变化。
 
 不要因为一个新的实现想法就重新定义整个项目。

@@ -1,11 +1,11 @@
-# Vision
+# 愿景
 
-> **As of:** 2026-08-16  
+> **截至：** 2026-08-16  
 > `origin.md` 记录项目为什么出现；本文描述如果这个方向成立，最终希望用户获得怎样的能力。
 
 ---
 
-## 1. North Star
+## 1. 北极星
 
 长期使用 AI 后，用户不应该得到越来越多互相独立的“聊天记忆”，而应该逐渐形成一份：
 
@@ -14,7 +14,7 @@
 - 有证据支持、允许存在冲突的长期判断；
 - 已经验证过、可以复用的 Skills；
 - 清楚知道来源、更新时间和适用范围的信息；
-- 可以被不同 Agent 按当前活动选择性使用的 Context。
+- 可以被不同 Agent 按当前活动选择性使用的上下文。
 
 这份长期认识首先由用户拥有和治理。
 
@@ -38,11 +38,11 @@
 
 ### 它知道自己为什么这样认为
 
-任何重要 State / Claim 都能追到：
+任何重要状态 / 主张都能追到：
 
 - 用户原话；
-- DSH Session；
-- Tool result；
+- DSH 会话；
+- 工具结果；
 - Git；
 - 文件；
 - 论文；
@@ -53,11 +53,11 @@
 
 一次排查、研究、开发或真实世界变化结束后，不只是留下聊天记录。
 
-系统可以从新的 Evidence 中提出：
+系统可以从新的证据中提出：
 
-- State update；
-- Claim update；
-- Skill candidate。
+- 状态更新；
+- 主张更新；
+- Skill 候选。
 
 但这些变化不会被模型随意写入。
 
@@ -65,31 +65,31 @@
 
 如果过去已经验证过一种做法，下一次应该能：
 
-- 更少 token；
-- 更少 Tool calls；
+- 更少 Token；
+- 更少工具调用；
 - 更少试错；
 - 甚至让更弱、更便宜的模型稳定完成。
 
 ### 它不会把“我的全部人生”塞给每个 Agent
 
-每次 Activity 只生成最小必要 Context。
+每次活动只生成最小必要上下文。
 
-一个 coding Agent 不需要看到健康数据；一个旅行任务也不需要读取所有科研 Claim。
+一个编码 Agent 不需要看到健康数据；一个旅行任务也不需要读取所有科研主张。
 
 ### 用户自己能够看见整个长期系统
 
-不是一个只能给 Agent 调用的隐藏 Memory API。
+不是一个只能给 Agent 调用的隐藏记忆 API。
 
 用户应该有一个长期认知控制面板，可以直接查看：
 
 - 现在系统认为我的世界是什么状态；
 - 哪些内容可能已经过期；
-- 最近产生了哪些 Proposal；
-- 哪些 Claims 存在冲突；
+- 最近产生了哪些修改建议；
+- 哪些主张存在冲突；
 - 哪些 Skills 最近成功或失败；
 - 某条信息从哪里来；
 - 哪个 Agent 能看到什么；
-- 一次 Agent request 最终实际看到了什么。
+- 一次 Agent 请求最终实际看到了什么。
 
 ---
 
@@ -98,76 +98,76 @@
 理想架构更接近：
 
 ```text
-             Human
+             人类
                │
-      browse / edit / govern
+      浏览 / 编辑 / 治理
                │
        Personal Context
-       ├── State
-       ├── Claims
+       ├── 状态
+       ├── 主张
        ├── Skills
-       ├── Evidence
-       ├── Policies
-       └── History
+       ├── 证据
+       ├── 策略
+       └── 历史
                │
       ┌────────┼────────┐
       ▼        ▼        ▼
-    Apps      DSH    Other Agents
+    应用      DSH    其他 Agent
                │
-        Context / Runtime
-           compilation
+        上下文 / 运行时
+           编译
 ```
 
 Personal Context 不要求所有应用的数据都迁入同一个数据库。
 
 它可以：
 
-- 自己保存 canonical metadata；
-- 引用外部 Evidence；
-- 从开放 Source 同步；
+- 自己保存权威元数据；
+- 引用外部证据；
+- 从开放来源同步；
 - 对不能连接的系统只保持手工输入或导入。
 
 ---
 
 ## 4. DSH 的角色
 
-第一阶段 DSH 是最现实的 primary runtime：
+第一阶段 DSH 是最现实的主要运行时：
 
-- everything-is-a-plugin；
-- Profile / Bundle / Preset；
-- Session；
-- Tools；
+- 一切皆插件；
+- Profile / Bundle / 预设；
+- 会话；
+- 工具；
 - Skills；
-- storage；
-- approval；
-- sandbox；
-- UI extension；
-- external protocol。
+- 存储；
+- 审批；
+- 沙箱；
+- 界面扩展；
+- 外部协议。
 
-因此可以在 DSH 上 dogfood 整套系统。
+因此可以在 DSH 上自用验证整套系统。
 
-但长期目标不是把用户数据锁回另一个 Agent Runtime。
+但长期目标不是把用户数据锁回另一个 Agent 运行时。
 
 ---
 
-## 5. 与 Memory / Learning 的关系
+## 5. 与记忆 / 学习的关系
 
-成熟 Memory 系统应该被复用，而不是重造。
+成熟记忆系统应该被复用，而不是重造。
 
 长期希望形成：
 
 ```text
-Canonical Reality
-State / provenance / lifecycle
+权威现实
+状态 / 来源追溯 / 生命周期
              │
              ├──────────┐
              │          │
              ▼          ▼
-      Context use   Lifelong Learning
-                    Experience → Skill
+      上下文使用终身学习
+                    经验 → Skill
 ```
 
-Memory 和 Skill learning 帮助系统成长；Canonical Context 防止“模型记住了一句话”自动变成长期事实。
+记忆和 Skill 学习帮助系统成长；权威上下文防止“模型记住了一句话”自动变成长期事实。
 
 ---
 
@@ -178,14 +178,14 @@ Memory 和 Skill learning 帮助系统成长；Canonical Context 防止“模型
 - 设备 / IT 环境；
 - 项目；
 - 科研；
-- Todo；
+- 待办；
 - 资产；
 - 财务；
 - 健康；
 - 家庭设备；
 - 语音记录。
 
-这些是愿景来源和潜在 Domain Packs，不代表核心仓库要重新实现所有垂直应用。
+这些是愿景来源和潜在领域包，不代表核心仓库要重新实现所有垂直应用。
 
 现实策略是：
 
@@ -199,9 +199,9 @@ Memory 和 Skill learning 帮助系统成长；Canonical Context 防止“模型
 
 项目真正成功不是因为：
 
-- Memory recall 更高 3%；
-- 多了一个漂亮 Viewer；
-- 支持更多 embedding；
+- 记忆召回更高 3%；
+- 多了一个漂亮查看器；
+- 支持更多嵌入；
 - 能连接更多 API。
 
 而是几周、几个月长期使用后：
